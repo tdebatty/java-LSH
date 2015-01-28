@@ -2,10 +2,6 @@
 
 A Java implementation of Locality Sensitive Hashing (LSH)
 
-
-[TOC]
-
-
 Download
 --------
 
