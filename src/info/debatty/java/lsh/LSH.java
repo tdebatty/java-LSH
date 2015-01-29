@@ -1,5 +1,7 @@
 package info.debatty.java.lsh;
 
+import info.debatty.java.stringsimilarity.KShingling;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;

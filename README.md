@@ -12,8 +12,11 @@ Locality Sensitive Hashing (LSH) is a family of hashing methods that tent to pro
 
 This project implements Locality Sensitive Hashing (LSH), as described in Leskovec, Rajaraman & Ullman (2014), "Mining of Massive Datasets", Cambridge University Press.
 
+The example below relies on the [java-string-similarity package](https://github.com/tdebatty/java-string-similarity) to perform k-shingling of strings.
+
 ```java
 import info.debatty.java.lsh.*;
+import info.debatty.java.stringsimilarity.KShingling;
 
 public class MyApp {
 
