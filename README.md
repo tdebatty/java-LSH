@@ -1,15 +1,16 @@
 # java-LSH
 
-A Java implementation of Locality Sensitive Hashing (LSH)
+A Java implementation of Locality Sensitive Hashing (LSH). Currently only the MinHash algorithm is implemented.
 
-Download
---------
+##Download
 
-https://github.com/tdebatty/java-LSH/releases
+See the [releases](https://github.com/tdebatty/java-LSH/releases) page.
 
-LSH
-----
-This is an implementation of Locality Sensitive Hashing (LSH) principle, as described in Leskovec, Rajaraman & Ullman (2014), "Mining of Massive Datasets", Cambridge University Press.
+##LSH
+
+Locality Sensitive Hashing (LSH) is a family of hashing methods that tent to produce the same hash (or signature) for similar items. There exist different LSH functions, that each correspond to a similarity metric. For example, the MinHash algorithm is designed for Jaccard similarity (the number of elements that two sets have in common).
+
+This project implements Locality Sensitive Hashing (LSH), as described in Leskovec, Rajaraman & Ullman (2014), "Mining of Massive Datasets", Cambridge University Press.
 
 ```java
 import info.debatty.java.lsh.*;
@@ -78,8 +79,8 @@ Phentermin 37.5 mg as cheap as 120 pills $366.00 aqye; 10; 2; 16;
 Phentermin 37.5 mg as cheap as 120 pills $366.00 efvb; 11; 9; 16; 
 ```
 
-MinHash
--------
+##MinHash
+
 MinHash is a hashing scheme that tents to produce similar signatures for sets that have a high Jaccard similarity.
 
 The Jaccard similarity between two sets is the relative number of elements these sets have in common: J(A, B) = |A ∩ B| / |A ∪ B| A MinHash signature is a sequence of numbers produced by multiple hash functions hi. It can be shown that the Jaccard similarity between two sets is also the probability that this hash result is the same for the two sets: J(A, B) = Pr[hi(A) = hi(B)]. Therefore, MinHash signatures can be used to estimate Jaccard similarity between two sets. Moreover, it can be shown that the expected estimation error is O(1 / sqrt(n)), where n is the size of the signature (the number of hash functions that are used to produce the signature).
