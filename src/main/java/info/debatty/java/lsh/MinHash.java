@@ -1,5 +1,6 @@
 package info.debatty.java.lsh;
 
+import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
@@ -28,6 +29,7 @@ public class MinHash {
         // Initialize the hash function for an similarity error of 0.1
         // For sets built from a dictionary of 5 items
         MinHash minhash = new MinHash(0.1, 5);
+        //minhash.printCoefficients();
         
         // Sets can be defined as an array of booleans:
         // [1 0 0 1 0]
@@ -48,9 +50,31 @@ public class MinHash {
         set2.add(3);
         int[] sig2 = minhash.hash(set2);
         
-        System.out.println(minhash.similarity(sig1, sig2));
+        System.out.println("Signature similarity: " + minhash.similarity(sig1, sig2));
+        System.out.println("Real similarity (Jaccard index)" +
+            JaccardIndex(Convert2Set(set1), set2));
         
-        minhash.printCoefficients();
+        
+    }
+    
+    public static double JaccardIndex(Set<Integer> s1, Set<Integer> s2) {
+        Set<Integer>  intersection = new HashSet<Integer>(s1);
+        intersection.retainAll(s2);
+        
+        Set<Integer>  union = new HashSet<Integer>(s1);
+        union.addAll(s2);
+        
+        return (double) intersection.size() / union.size();
+    }
+    
+    public static Set<Integer> Convert2Set(boolean[] array) {
+        Set<Integer> set = new TreeSet<Integer>();
+        for (int i = 0; i < array.length; i++) {
+            if (array[i]) {
+                set.add(i);
+            }
+        }
+        return set;
     }
     
 
@@ -169,14 +193,9 @@ public class MinHash {
             throw new IllegalArgumentException("Size of array should be dict_size");
         }
         
-       Set<Integer> set = new TreeSet<Integer>();
-       for (int i = 0; i < array.length; i++) {
-           if (array[i]) {
-               set.add(i);
-           }
-       }
+        Set<Integer> set = Convert2Set(array);
        
-       return hash(set);
+        return hash(set);
     }
 
     /**
@@ -225,6 +244,5 @@ public class MinHash {
         }
         System.out.print("\n");
     }
-    
     
 }

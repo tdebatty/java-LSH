@@ -4,6 +4,15 @@ A Java implementation of Locality Sensitive Hashing (LSH). Currently only the Mi
 
 ##Download
 
+Using maven:
+```
+<dependency>
+    <groupId>info.debatty</groupId>
+    <artifactId>java-lsh</artifactId>
+    <version>RELEASE</version>
+</dependency>
+```
+
 See the [releases](https://github.com/tdebatty/java-LSH/releases) page.
 
 ##LSH
@@ -96,8 +105,8 @@ import info.debatty.java.lsh.*;
 public class MyApp {
 
     public static void main(String[] args) {
-        // Initialize the hash function for an similarity error of 0.1
-        // For sets built from a dictionary of 5 items
+        // Initialize the hash function for a similarity error of 0.1
+        // and for sets built from a dictionary of 5 items
         MinHash minhash = new MinHash(0.1, 5);
         
         // Sets can be defined as an array of booleans:
