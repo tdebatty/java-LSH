@@ -38,7 +38,7 @@ public class LSH {
     }
 
     /**
-     * Set the number of buckets per stage (or band).
+     * Set the number of buckets per stage.
      * Default value is 10.
      * @param b 
      */
@@ -61,13 +61,14 @@ public class LSH {
             acc[i] = 0;
         }
         
-        int signature_element_per_stage = signature.length / s;
+        // Number of rows per stage
+        int rows = signature.length / s;
         
         for (int i = 0; i < signature.length; i++) {
             long v = ((long) signature[i] * (long) (b-1)) % Integer.MAX_VALUE;
             
             // current stage
-            int j = Math.min(i / signature_element_per_stage, s-1);
+            int j = Math.min(i / rows, s-1);
             acc[j] = (acc[j] + v) % Integer.MAX_VALUE;
         }
         

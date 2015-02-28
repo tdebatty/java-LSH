@@ -29,6 +29,7 @@ public class MinHash {
         // Initialize the hash function for an similarity error of 0.1
         // For sets built from a dictionary of 5 items
         MinHash minhash = new MinHash(0.1, 5);
+        
         //minhash.printCoefficients();
         
         // Sets can be defined as an array of booleans:
@@ -75,6 +76,19 @@ public class MinHash {
             }
         }
         return set;
+    }
+    
+    /**
+     * Computes the size of the signature required to achieve a given error
+     * in similarity estimation (1 / error^2)
+     * @param error
+     * @return size of the signature
+     */
+    public static int size(double error) {
+        if (error < 0 && error > 1) {
+            throw  new IllegalArgumentException("error should be in [0 .. 1]");
+        }
+        return (int) (1 / (error * error));
     }
     
 
@@ -128,18 +142,6 @@ public class MinHash {
         }
     }
     
-    /**
-     * Computes the size of the signature required to achieve a given error
-     * in similarity estimation (1 / error^2)
-     * @param error
-     * @return size of the signature
-     */
-    public static int size(double error) {
-        if (error < 0 && error > 1) {
-            throw  new IllegalArgumentException("error should be in [0 .. 1]");
-        }
-        return (int) (1 / (error * error));
-    }
     
     /**
      * Computes hi(x) as (a_i * x + b_i) % dict_size.
@@ -181,7 +183,8 @@ public class MinHash {
     }
     
     /**
-     * Computes the signature for this set, represented as an array of booleans
+     * Computes the signature for this set
+     * The input set is represented as an array of booleans
      * For example the array [true, false, true, true, false]
      * corresponds to the set {0, 2, 3}
      * 
