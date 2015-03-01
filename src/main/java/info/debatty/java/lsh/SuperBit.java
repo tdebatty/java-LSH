@@ -44,7 +44,7 @@ public class SuperBit {
         
         int n = 10;
         
-        SuperBit sb = new SuperBit(n, n, 100/n);
+        SuperBit sb = new SuperBit(n);
         
         Random rand = new Random();
         double[] v1 = new double[n];
@@ -60,9 +60,8 @@ public class SuperBit {
         System.out.println("Signature (estimated) similarity: " + sb.similarity(sig1, sig2));
         System.out.println("Real (cosine) similarity: " + cosineSimilarity(v1, v2));
         
-        
-        double var = 0;
-        int iterations = 1000;
+        double error = 0;
+        int iterations = 100;
         for (int j = 0; j < iterations; j++) {
             for (int i = 0; i < n; i++) {
                 v1[i] = rand.nextInt();
@@ -71,13 +70,13 @@ public class SuperBit {
             
             double similarity = cosineSimilarity(v1, v2);
             double estimated_similarity = sb.similarity(sb.signature(v1), sb.signature(v2));
-            var += Math.pow(similarity - estimated_similarity, 2);
+            error += Math.abs(similarity - estimated_similarity);
         }
         
         System.out.printf(
-                "Variance after %d iterations: %f\n",
+                "Error after %d iterations: %f\n",
                 iterations,
-                var / iterations);
+                error / iterations);
     }
     
     private double[][] hyperplanes;
@@ -100,13 +99,13 @@ public class SuperBit {
     
     /**
      * Initialize SuperBit algorithm.
-     * With code length K = 10
-     * The K vectors are orthogonalized in d batches of 10/d vectors
-     * The resulting variance is 0.01 rad
+     * With code length K = 100
+     * The K vectors are orthogonalized in d batches of 100/d vectors
+     * The resulting mean error is 0.1 rad
      * @param d 
      */
     public SuperBit(int d) {
-        this(d, d, 10/d);
+        this(d, d, 100/d);
     }
     
     private void init(int d, int N, int L) {
@@ -206,7 +205,7 @@ public class SuperBit {
     }
     
     /**
-     * Computes the cosine similarity, computed as v1 . v2 / (|v1| x |v2|)
+     * Computes the cosine similarity, computed as v1 . v2 / (|v1| * |v2|)
      * Cosine similarity of two vectors is the cosine of the angle between them.
      * The cosine of 0° is 1, and it is less than 1 for any other angle. It is 
      * based on the orientation and not on the magnitude of vectors: two vectors with the 

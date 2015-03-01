@@ -1,6 +1,8 @@
 # java-LSH
 
-A Java implementation of Locality Sensitive Hashing (LSH). Currently only the MinHash algorithm is implemented.
+A Java implementation of Locality Sensitive Hashing (LSH). Are currently implemented:
+* MinHash algorithm to estimate Jaccard index;
+* Super-Bit algorithm to estimate cosine similarity.
 
 ##Download
 
@@ -142,4 +144,47 @@ h0 : a=206828118 b=787613333
 h1 : a=1267418977 b=991665166
 h2 : a=760071140 b=1435168028
 ...
+```
+
+##Super-Bit
+
+Super-Bit is an improvement of Random Projection LSH. It computes an estimation of cosine similarity. In Super-Bit, the K random vectors are orthogonalized in L batches of N vectors, where
+* N is called the Super-Bit depth
+* L is called the number of Super-Bits
+* K = L * N  is the code length (the size of the signature)
+
+Super-Bit Locality-Sensitive Hashing, Jianqiu Ji, Jianmin Li, Shuicheng Yan, Bo Zhang, Qi Tian
+http://papers.nips.cc/paper/4847-super-bit-locality-sensitive-hashing.pdf
+Published in Advances in Neural Information Processing Systems 25, 2012
+
+The cosine similarity between two points vectors in R^n is the cosinus of their angle. It is computed as v1 . v2 / (|v1| * |v2|).
+Two vectors with the same orientation have a Cosine similarity of 1, two vectors at 90° have a similarity of 0, and two vectors diametrically opposed have a similarity of -1, independent of their magnitude.
+
+
+```java
+import info.debatty.lsh.SuperBit;
+
+public class MyApp {
+    
+    public static void main(String[] args) {
+        
+        int n = 10;
+
+		// Initialize Super-Bit 
+        SuperBit sb = new SuperBit(n);
+        
+        Random rand = new Random();
+        double[] v1 = new double[n];
+        double[] v2 = new double[n];
+        for (int i = 0; i < n; i++) {
+            v1[i] = rand.nextInt();
+            v2[i] = rand.nextInt();
+        }
+
+        boolean[] sig1 = sb.signature(v1);
+        boolean[] sig2 = sb.signature(v2);
+        
+        System.out.println("Signature (estimated) similarity: " + sb.similarity(sig1, sig2));
+        System.out.println("Real (cosine) similarity: " + cosineSimilarity(v1, v2));
+    }
 ```
