@@ -1,8 +1,14 @@
 # java-LSH
 
-A Java implementation of Locality Sensitive Hashing (LSH). Are currently implemented:
-* MinHash algorithm to estimate Jaccard index;
-* Super-Bit algorithm to estimate cosine similarity.
+A Java implementation of Locality Sensitive Hashing (LSH).
+
+Locality Sensitive Hashing (LSH) is a family of hashing methods that tent to produce the same hash (or signature) for similar items. There exist different LSH functions, that each correspond to a similarity metric. For example, the MinHash algorithm is designed for Jaccard similarity (the relative number of elements that two sets have in common). For cosine similarity, the traditional LSH algorithm used is Random Projection, but others exist, like Super-Bit, that deliver better resutls.
+
+This library implements Locality Sensitive Hashing (LSH), as described in Leskovec, Rajaraman & Ullman (2014), "Mining of Massive Datasets", Cambridge University Press.
+
+Are currently implemented:
+* MinHash algorithm for Jaccard index;
+* Super-Bit algorithm for cosine similarity.
 
 ##Download
 
@@ -15,83 +21,8 @@ Using maven:
 </dependency>
 ```
 
-See the [releases](https://github.com/tdebatty/java-LSH/releases) page.
+Or see the [releases](https://github.com/tdebatty/java-LSH/releases) page.
 
-##LSH
-
-Locality Sensitive Hashing (LSH) is a family of hashing methods that tent to produce the same hash (or signature) for similar items. There exist different LSH functions, that each correspond to a similarity metric. For example, the MinHash algorithm is designed for Jaccard similarity (the number of elements that two sets have in common).
-
-This project implements Locality Sensitive Hashing (LSH), as described in Leskovec, Rajaraman & Ullman (2014), "Mining of Massive Datasets", Cambridge University Press.
-
-The example below relies on the [java-string-similarity package](https://github.com/tdebatty/java-string-similarity) to perform k-shingling of strings.
-
-```java
-import info.debatty.java.lsh.*;
-import info.debatty.java.stringsimilarity.KShingling;
-
-public class MyApp {
-
-    public static void main(String[] args) {
-
-        // Read all strings from file
-        String[] strings = null;
-        try {
-            strings = readFile(args[0]);
-        } catch (IOException ex) {
-            Logger.getLogger(LSH.class.getName()).log(Level.SEVERE, null, ex);
-            System.exit(-1);
-        }
-        
-        int n = strings.length;
-        
-        // Compute the dictionary of all shingles (4-grams)
-        KShingling ks = new KShingling(4);
-        for (String s : strings) {
-            ks.parse(s);
-        }
-        System.out.println("Found " + ks.size() + " different 4-shingles...\n");
-        
-        // Compute boolean vector representation of each string
-        boolean[][] strings_as_booleans = new boolean[n][];
-        for (int i = 0; i < n; i++) {
-            strings_as_booleans[i] = ks.booleanVectorOf(strings[i]);
-        }
-        
-        // Compute minhash signatures
-        MinHash mh = new MinHash(0.1, ks.size());
-        int[][] minhash_signatures = new int[n][];
-        for (int i = 0; i < n; i++) {
-            minhash_signatures[i] = mh.hash(strings_as_booleans[i]);
-        }
-        
-        // Perform LSH bucketting using 3 stages (bands) and 20 buckets per band
-        LSH lsh = new LSH();
-        lsh.setS(3);
-        lsh.setB(20);
-        int[][] lsh_buckets = new int[n][];
-        for (int i = 0; i < n; i++) {
-            lsh_buckets[i] = lsh.hash(minhash_signatures[i]);
-        }
-        
-        // Display bucket values:
-        for (int i = 0; i < n; i++) {
-            System.out.print(strings[i] + "; ");
-            for (int j = 0; j < lsh.s; j++) {
-                System.out.print(lsh_buckets[i][j] + "; ");
-            }
-            System.out.print("\n");
-        }
-    }
-}
-```
-
-```
-Phentermin 37.5 mg as cheap as 120 pills $366.00 5l; 11; 2; 8; 
-Phentermin 37.5 mg as cheap as 120 pills $366.00 8eg5; 11; 10; 10; 
-Phentermin 37.5 mg as cheap as 120 pills $366.00 9j; 11; 2; 9; 
-Phentermin 37.5 mg as cheap as 120 pills $366.00 aqye; 10; 2; 16; 
-Phentermin 37.5 mg as cheap as 120 pills $366.00 efvb; 11; 9; 16; 
-```
 
 ##MinHash
 
@@ -101,26 +32,131 @@ The Jaccard similarity between two sets is the relative number of elements these
 
 
 ```java
-import info.debatty.java.lsh.*;
+import info.debatty.java.lsh.LSHMinHash;
+import info.debatty.java.lsh.MinHash;
+import java.util.Random;
 
-
-public class MyApp {
+public class LSHMinHashExample {
 
     public static void main(String[] args) {
-        // Initialize the hash function for a similarity error of 0.1
-        // and for sets built from a dictionary of 5 items
+        // Number of sets
+        int count = 2000;
+        
+        // Size of dictionary
+        int n = 100;
+        
+        // Number of buckets
+        // Attention: to get relevant results, the number of elements per bucket
+        // should be at least 100
+        int buckets = 10;
+        
+        // Let's generate some random sets
+        boolean[][] vectors = new boolean[count][];
+        Random r = new Random();
+        
+        // To get some interesting measures, we first generate a single
+        // sparse random vector
+        vectors[0] = new boolean[n];    
+        for (int j = 0; j < n; j++) {
+            vectors[0][j] = (r.nextInt(10) == 0);
+        }
+        
+        // Then we generate the other vectors, which have a reasonable chance 
+        // to look like the first one...
+        for (int i = 1; i < count; i++) {
+            vectors[i] = new boolean[n];
+            
+            for (int j = 0; j < n; j++) {
+                vectors[i][j] = (r.nextDouble() <= 0.7 ? vectors[0][j] : (r.nextInt(10) == 0));
+            }
+        }
+        
+        // Now we can proceed to LSH binning
+        // We will test multiple stages
+        for (int stages = 1; stages <= 10; stages++) {
+            
+            // Compute the LSH hash of each vector
+            LSHMinHash lsh = new LSHMinHash(stages, buckets, n);
+            int[][] hashes = new int[count][];
+            for (int i = 0; i < count; i++) {
+                boolean[] vector = vectors[i];
+                hashes[i] = lsh.hash(vector);
+            }
+
+            // We now have the LSH hash for each input set
+            // Let's have a look at how similar sets (according to Jaccard 
+            // index) were binned...
+            int[][] results = new int[11][2];
+            for (int i = 0; i < vectors.length; i++) {
+                boolean[] vector1 = vectors[i];
+                int[] hash1 = hashes[i];
+
+                for (int j = 0; j < i; j++) {
+                    boolean[] vector2 = vectors[j];
+                    int[] hash2 = hashes[j];
+                    
+                    // We compute the similarity between each pair of sets
+                    double similarity = MinHash.JaccardIndex(vector1, vector2);
+
+                    // We count the number of pairs with similarity 0.1, 0.2, 
+                    // 0.3, etc.
+                    results[(int) (10 * similarity)][0]++;
+
+                    // Do they fall in the same bucket for one of the stages?                
+                    for (int stage = 0; stage < stages; stage++) {
+                        if (hash1[stage] == hash2[stage]) {
+                            results[(int) (10 * similarity)][1]++;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // Now we can display (and plot in Gnuplot) the result:
+            // For pairs that have a similarity x, the probability of falling
+            // in the same bucket for at least one of the stages is y
+            for (int i = 0; i < results.length; i++) {
+                double similarity = (double) i / 10;
+                
+                double probability = 0;
+                if (results[i][0] != 0) {
+                    probability = (double) results[i][1] / results[i][0];
+                }
+                System.out.println("" + similarity + "\t" + probability + "\t" + stages);
+            }
+            
+            // Separate the series for Gnuplot...
+            System.out.print("\n");
+        }
+    }
+}
+```
+
+This example will run LSH binning for different number of stages. At each step, for each value of Jaccard similarity between pairs of sets (in the range [0, 0.1, 0.2, ... 1.0]), the program computes the probability that these two pairs fall in the same bucket for at least one stage. The results can be plotted with Gnuplot for example:
+
+![alt tag](https://raw.githubusercontent.com/tdebatty/java-LSH/master/lsh-minhash.png)
+
+On this figure, the x-axis is the Jaccard similarity between sets, the y-axis is the probability that these pairs fall in the same bucket for at least one stage. The different series represent different values for the number of stages (from 1 to 10).
+
+We can clearly recognize the typical S curve of MinHash, with the threshold (the point where the curve is the steepest) located around x = 0.5.
+
+If you simply wish to compute MinHash signatures (witout performing LSH binning), you can directly use the MinHash class:
+
+```java
+import info.debatty.java.lsh.MinHash;
+import java.util.TreeSet;
+
+public class MinHashExample {
+
+    public static void main(String[] args) {
+        // Initialize the hash function for an similarity error of 0.1
+        // For sets built from a dictionary of 5 items
         MinHash minhash = new MinHash(0.1, 5);
         
-        // Sets can be defined as an array of booleans:
+        // Sets can be defined as an vector of booleans:
         // [1 0 0 1 0]
-        boolean[] set1 = new boolean[5];
-        set1[0] = true;
-        set1[1] = false;
-        set1[2] = false;
-        set1[3] = true;
-        set1[4] = false;
-        int[] sig1 = minhash.hash(set1);
-        minhash.printSignature(sig1);
+        boolean[] vector1 = {true, false, false, true, false};
+        int[] sig1 = minhash.signature(vector1);
         
         // Or as a set of integers:
         // set2 = [1 0 1 1 0]
@@ -128,22 +164,20 @@ public class MyApp {
         set2.add(0);
         set2.add(2);
         set2.add(3);
-        int[] sig2 = minhash.hash(set2);
+        int[] sig2 = minhash.signature(set2);
         
-        System.out.println(minhash.similarity(sig1, sig2));
-        
-        minhash.printCoefficients();
+        System.out.println("Signature similarity: " + minhash.similarity(sig1, sig2));
+        System.out.println("Real similarity (Jaccard index)" +
+            MinHash.JaccardIndex(MinHash.Convert2Set(vector1), set2));
     }
 }
 ```
 
+Which will produce:
+
 ```
-0.7070707070707071
-2 1 3 1 3 3 1 1 1 3 0 0 0 0 0 2 2 3 ...
-h0 : a=206828118 b=787613333
-h1 : a=1267418977 b=991665166
-h2 : a=760071140 b=1435168028
-...
+Signature similarity: 0.6767676767676768
+Real similarity (Jaccard index)0.6666666666666666
 ```
 
 ##Super-Bit
@@ -157,10 +191,72 @@ Super-Bit Locality-Sensitive Hashing, Jianqiu Ji, Jianmin Li, Shuicheng Yan, Bo 
 http://papers.nips.cc/paper/4847-super-bit-locality-sensitive-hashing.pdf
 Published in Advances in Neural Information Processing Systems 25, 2012
 
-The cosine similarity between two points vectors in R^n is the cosinus of their angle. It is computed as v1 . v2 / (|v1| * |v2|).
+The cosine similarity between two points vectors in R^n is the cosine of their angle. It is computed as v1 . v2 / (|v1| * |v2|).
 Two vectors with the same orientation have a Cosine similarity of 1, two vectors at 90° have a similarity of 0, and two vectors diametrically opposed have a similarity of -1, independent of their magnitude.
 
+Here is an example of how to quickly bin together vectors that have a high cosine similarity using LSH + Super-Bit:
 
+```java
+import info.debatty.java.lsh.LSHSuperBit;
+import java.util.Random;
+
+public class LSHSuperBitExample {
+
+    public static void main(String[] args) {
+        int count = 100;
+        
+        // R^n
+        int n = 3;
+        
+        int stages = 2;
+        int buckets = 4;
+        
+        // Produce some vectors in R^n
+        Random r = new Random();
+        double[][] vectors = new double[count][];
+        for (int i = 0; i < count; i++) {
+            vectors[i] = new double[n];
+            
+            for (int j = 0; j < n; j++) {
+                vectors[i][j] = r.nextGaussian();
+            }
+        }
+        
+        LSHSuperBit lsh = new LSHSuperBit(stages, buckets, n);
+        
+        // Compute a SuperBit signature, and a LSH hash
+        for (int i = 0; i < count; i++) {
+            double[] vector = vectors[i];
+            int[] hash = lsh.hash(vector);
+            for (double v : vector) {
+                System.out.printf("%6.2f\t", v);
+            }
+            System.out.print(hash[0]);
+            System.out.print("\n");
+        }
+    }
+}
+```
+
+This will produce something like, where the last column is the bucket in which this vector was binned (at first stage):
+
+```
+ -0.48	 -0.68	  1.87	1
+  0.77	  0.11	  2.20	1
+ -0.05	  0.23	 -1.12	2
+  1.30	  0.02	  1.44	3
+ -0.34	 -1.51	  0.78	3
+  1.64	  0.02	  0.84	3
+ -0.74	  1.58	 -0.79	0
+ -0.17	 -1.27	 -1.25	2
+...
+```
+
+This can be plotted with Gnuplot for example:
+
+![alt tag](https://raw.githubusercontent.com/tdebatty/java-LSH/master/lsh-superbit.png)
+
+If you only wish to compute super-bit signatures of vectors (without performing LSH binning), you can directly use the SuperBit class:
 ```java
 import info.debatty.lsh.SuperBit;
 
