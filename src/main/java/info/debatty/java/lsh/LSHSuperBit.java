@@ -49,4 +49,13 @@ public class LSHSuperBit extends LSH {
     public int[] hash(double[] vector) {
         return hashSignature(sb.signature(vector));
     }
+    
+    public int[] hash(int[] vector) {
+        
+        double[] d = new double[vector.length];
+        for (int i = 0; i < vector.length; i++) {
+            d[i] = (double) vector[i];
+        }
+        return hash(d);
+    }
 }
