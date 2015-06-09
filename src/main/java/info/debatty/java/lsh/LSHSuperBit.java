@@ -24,13 +24,26 @@
 
 package info.debatty.java.lsh;
 
+import java.io.Serializable;
+import org.apache.commons.math3.linear.ArrayRealVector;
+import org.apache.commons.math3.linear.RealVector;
+
 /**
  *
  * @author Thibault Debatty
  */
-public class LSHSuperBit extends LSH {
-    private final SuperBit sb;
+public class LSHSuperBit extends LSH implements Serializable {
+    private SuperBit sb;
 
+    /**
+     * Instantiates a LSH instance with s stages (or bands) and b buckets (per 
+     * stage), in a space with n dimensions, that uses SuperBit for computing
+     * signatures (thus meant for cosine similarity).
+     * 
+     * @param s stages
+     * @param b buckets (per stage)
+     * @param n dimensionality
+     */
     public LSHSuperBit(int s, int b, int n) {
         super(s, b, n);
         
@@ -45,11 +58,34 @@ public class LSHSuperBit extends LSH {
         
         this.sb = new SuperBit(n, superbit, K/superbit);
     }
+    
+    public LSHSuperBit() {
+        
+    }
 
-    public int[] hash(double[] vector) {
+    /**
+     * Hash (bin) a vector in s stages into b buckets
+     * @param vector
+     * @return 
+     */
+    public int[] hash(RealVector vector) {
         return hashSignature(sb.signature(vector));
     }
     
+    /**
+     * Hash (bin) a vector in s stages into b buckets
+     * @param vector
+     * @return 
+     */
+    public int[] hash(double[] vector) {
+        return hash(new ArrayRealVector(vector));
+    }
+    
+    /**
+     * Hash (bin) a vector in s stages into b buckets
+     * @param vector
+     * @return 
+     */
     public int[] hash(int[] vector) {
         
         double[] d = new double[vector.length];

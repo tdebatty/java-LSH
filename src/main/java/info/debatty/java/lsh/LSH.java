@@ -30,6 +30,10 @@ public abstract class LSH {
         
     }
     
+    public LSH() {
+        
+    }
+    
     /**
      * 
      * @return the number of stages (bands)

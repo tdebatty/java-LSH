@@ -1,3 +1,5 @@
+package info.debatty.java.lsh.examples;
+
 /*
  * The MIT License
  *
@@ -22,32 +24,37 @@
  * THE SOFTWARE.
  */
 
-package info.debatty.java.lsh.examples;
 
 import info.debatty.java.lsh.SuperBit;
 import java.util.Random;
+import org.apache.commons.math3.linear.OpenMapRealVector;
+import org.apache.commons.math3.linear.SparseRealVector;
 
 /**
  *
  * @author Thibault Debatty
  */
-public class SuperBitExample {
+public class SuperBitSparseExample {
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         
-        int n = 10;
+        int n = 1000;
         
+        // Initialize SuperBit algorithm for n dimensions
         SuperBit sb = new SuperBit(n);
         
+        
+        // Create some sparse vectors
         Random rand = new Random();
-        double[] v1 = new double[n];
-        double[] v2 = new double[n];
-        for (int i = 0; i < n; i++) {
-            v1[i] = rand.nextInt();
-            v2[i] = rand.nextInt();
+        SparseRealVector v1 = new OpenMapRealVector(n);
+        SparseRealVector v2 = new OpenMapRealVector(n);
+        
+        for (int i = 0; i < n/10; i++) {
+            v1.setEntry(rand.nextInt(n), rand.nextDouble());
+            v2.setEntry(rand.nextInt(n), rand.nextDouble());
         }
 
         boolean[] sig1 = sb.signature(v1);
@@ -55,8 +62,7 @@ public class SuperBitExample {
         
         System.out.println("Signature (estimated) similarity: " + 
                 sb.similarity(sig1, sig2));
-        System.out.println("Real (cosine) similarity: " + 
-                SuperBit.cosineSimilarity(v1, v2));
+        System.out.println("Real (cosine) similarity: " + v1.cosine(v2));
         
     }
     

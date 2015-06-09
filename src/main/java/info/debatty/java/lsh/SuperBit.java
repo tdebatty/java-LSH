@@ -24,12 +24,17 @@
 
 package info.debatty.java.lsh;
 
+import java.io.Serializable;
 import java.util.Random;
+import org.apache.commons.math3.linear.ArrayRealVector;
+import org.apache.commons.math3.linear.RealVector;
 
 /**
  * Implementation of Super-Bit Locality-Sensitive Hashing.
  * Super-Bit is an improvement of Random Projection LSH.
  * It computes an estimation of cosine similarity.
+ * Internally, the class uses apache-commons RealVector, which allows to use
+ * SparseVector if the application relies on large sparse vectors
  * 
  * Super-Bit Locality-Sensitive Hashing
  * Jianqiu Ji, Jianmin Li, Shuicheng Yan, Bo Zhang, Qi Tian
@@ -38,9 +43,9 @@ import java.util.Random;
  * 
  * @author Thibault Debatty
  */
-public class SuperBit {
+public class SuperBit implements Serializable {
     
-    private double[][] hyperplanes;
+    private ArrayRealVector[] hyperplanes;
     
     /**
      * Initialize SuperBit algorithm.
@@ -53,59 +58,6 @@ public class SuperBit {
      * @param L number of Super-Bit [1 ..
      */
     public SuperBit(int d, int N, int L) {
-        init(d, N, L);
-    }
-    
-    /**
-     * Initialize SuperBit algorithm.
-     * With code length K = 10000
-     * The K vectors are orthogonalized in d batches of 10000/d vectors
-     * The resulting mean error is 0.01
-     * @param d 
-     */
-    public SuperBit(int d) {
-        this(d, d, 10000/d);
-    }
-    
-    /**
-     * Compute the signature of this vector
-     * @param vector
-     * @return 
-     */
-    public boolean[] signature(double[] vector) {
-        
-        boolean[] sig = new boolean[this.hyperplanes.length];
-        for (int i = 0; i < this.hyperplanes.length; i++) {
-            sig[i] = (dotProduct(vector, this.hyperplanes[i]) >= 0);
-        }
-        return sig;
-    }
-    
-    /**
-     * Compute the similarity between two signature, which is also an
-     * estimation of the cosine similarity between the two vectors.
-     * 
-     * @param sig1
-     * @param sig2
-     * @return estimated cosine similarity
-     */
-    public double similarity(boolean[] sig1, boolean[] sig2) {
-        
-        double E = 0;
-        for (int i = 0; i < sig1.length; i++) {
-            E += (sig1[i] == sig2[i] ? 1 : 0);
-        }
-        
-        E = E / sig1.length;
-        
-        return Math.cos((1 - E) * Math.PI);
-    }
-    
-    public double[][] getHyperplanes() {
-        return this.hyperplanes;
-    }
-    
-    private void init(int d, int N, int L) {
         if (d <= 0) {
             throw new IllegalArgumentException("Dimension d must be >= 1");
         }
@@ -171,7 +123,74 @@ public class SuperBit {
             }
         }
         
-        this.hyperplanes = w;
+        hyperplanes = new ArrayRealVector[w.length];
+        for (int i = 0; i < w.length; i++) {
+            this.hyperplanes[i] = new ArrayRealVector(w[i]);
+        }
+        
+        // this.hyperplanes = w;
+    }
+    
+    /**
+     * Initialize SuperBit algorithm.
+     * With code length K = 10000
+     * The K vectors are orthogonalized in d batches of 10000/d vectors
+     * The resulting mean error is 0.01
+     * @param d 
+     */
+    public SuperBit(int d) {
+        this(d, d, 10000/d);
+    }
+    
+    public SuperBit() {
+        
+    }
+    
+    /**
+     * Compute the signature of this vector
+     * @param vector
+     * @return 
+     */
+    
+    public boolean[] signature(RealVector vector) {
+        boolean[] sig = new boolean[this.hyperplanes.length];
+        for (int i = 0; i < this.hyperplanes.length; i++) {
+            sig[i] = (vector.dotProduct(this.hyperplanes[i]) >= 0);
+        }
+        return sig;
+    }
+    
+    /**
+     * Compute the signature of this vector
+     * @param vector
+     * @return 
+     */
+    public boolean[] signature(double[] vector) {
+        return signature(new ArrayRealVector(vector));
+    }
+    
+    /**
+     * Compute the similarity between two signature, which is also an
+     * estimation of the cosine similarity between the two vectors.
+     * 
+     * @param sig1
+     * @param sig2
+     * @return estimated cosine similarity
+     */
+    public double similarity(boolean[] sig1, boolean[] sig2) {
+        
+        double E = 0;
+        for (int i = 0; i < sig1.length; i++) {
+            E += (sig1[i] == sig2[i] ? 1 : 0);
+        }
+        
+        E = E / sig1.length;
+        
+        return Math.cos((1 - E) * Math.PI);
+    }
+    
+    public ArrayRealVector[] getHyperplanes() {
+        return this.hyperplanes;
     }
     
     /* ---------------------- STATIC ---------------------- */
