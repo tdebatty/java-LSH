@@ -28,7 +28,6 @@ import info.debatty.java.lsh.SuperBit;
 import java.util.Random;
 
 /**
- *
  * @author Thibault Debatty
  */
 public class SuperBitExample {
@@ -38,7 +37,7 @@ public class SuperBitExample {
      */
     public static void main(String[] args) {
         
-        int n = 10;
+        int n = 100;
         
         SuperBit sb = new SuperBit(n);
         

@@ -24,9 +24,8 @@
 
 package info.debatty.java.lsh;
 
+import info.debatty.java.utils.SparseIntegerVector;
 import java.io.Serializable;
-import org.apache.commons.math3.linear.ArrayRealVector;
-import org.apache.commons.math3.linear.RealVector;
 
 /**
  *
@@ -36,9 +35,16 @@ public class LSHSuperBit extends LSH implements Serializable {
     private SuperBit sb;
 
     /**
-     * Instantiates a LSH instance with s stages (or bands) and b buckets (per 
-     * stage), in a space with n dimensions, that uses SuperBit for computing
-     * signatures (thus meant for cosine similarity).
+     * LSH implementation relying on SuperBit, to bin vectors s times (stages) in
+     * b buckets (per stage), in a space with n dimensions. Input vectors with
+     * a high cosine similarity have a high probability of falling in the same
+     * bucket...
+     * 
+     * Supported input types:
+     * - double[]
+     * - sparseIntegerVector
+     * - int[]
+     * - others to come...
      * 
      * @param s stages
      * @param b buckets (per stage)
@@ -68,17 +74,12 @@ public class LSHSuperBit extends LSH implements Serializable {
      * @param vector
      * @return 
      */
-    public int[] hash(RealVector vector) {
+    public int[] hash(double[] vector) {
         return hashSignature(sb.signature(vector));
     }
     
-    /**
-     * Hash (bin) a vector in s stages into b buckets
-     * @param vector
-     * @return 
-     */
-    public int[] hash(double[] vector) {
-        return hash(new ArrayRealVector(vector));
+    public int[] hash(SparseIntegerVector vector){
+        return hashSignature(sb.signature(vector));
     }
     
     /**

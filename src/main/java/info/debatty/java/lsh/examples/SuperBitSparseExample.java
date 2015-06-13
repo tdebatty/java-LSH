@@ -26,9 +26,8 @@ package info.debatty.java.lsh.examples;
 
 
 import info.debatty.java.lsh.SuperBit;
+import info.debatty.java.utils.SparseIntegerVector;
 import java.util.Random;
-import org.apache.commons.math3.linear.OpenMapRealVector;
-import org.apache.commons.math3.linear.SparseRealVector;
 
 /**
  *
@@ -49,20 +48,25 @@ public class SuperBitSparseExample {
         
         // Create some sparse vectors
         Random rand = new Random();
-        SparseRealVector v1 = new OpenMapRealVector(n);
-        SparseRealVector v2 = new OpenMapRealVector(n);
         
+        int[] v = new int[n];
         for (int i = 0; i < n/10; i++) {
-            v1.setEntry(rand.nextInt(n), rand.nextDouble());
-            v2.setEntry(rand.nextInt(n), rand.nextDouble());
+            v[rand.nextInt(n)] = rand.nextInt(100);
         }
+        SparseIntegerVector v1 = new SparseIntegerVector(v);
+        
+        v = new int[n];
+        for (int i = 0; i < n/10; i++) {
+            v[rand.nextInt(n)] = rand.nextInt(100);
+        }
+        SparseIntegerVector v2 = new SparseIntegerVector(v);
 
         boolean[] sig1 = sb.signature(v1);
         boolean[] sig2 = sb.signature(v2);
         
         System.out.println("Signature (estimated) similarity: " + 
                 sb.similarity(sig1, sig2));
-        System.out.println("Real (cosine) similarity: " + v1.cosine(v2));
+        System.out.println("Real cosine similarity: " + v1.dotProduct(v2) / (v1.norm() * v2.norm()));
         
     }
     

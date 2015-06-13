@@ -24,28 +24,30 @@
 
 package info.debatty.java.lsh;
 
+import info.debatty.java.utils.SparseIntegerVector;
 import java.io.Serializable;
 import java.util.Random;
-import org.apache.commons.math3.linear.ArrayRealVector;
-import org.apache.commons.math3.linear.RealVector;
 
 /**
  * Implementation of Super-Bit Locality-Sensitive Hashing.
  * Super-Bit is an improvement of Random Projection LSH.
  * It computes an estimation of cosine similarity.
- * Internally, the class uses apache-commons RealVector, which allows to use
- * SparseVector if the application relies on large sparse vectors
  * 
  * Super-Bit Locality-Sensitive Hashing
  * Jianqiu Ji, Jianmin Li, Shuicheng Yan, Bo Zhang, Qi Tian
  * http://papers.nips.cc/paper/4847-super-bit-locality-sensitive-hashing.pdf
  * Advances in Neural Information Processing Systems 25, 2012
  * 
+ * Supported input types:
+ * - SparseIntegerVector
+ * - double[]
+ * - others to come...
+ * 
  * @author Thibault Debatty
  */
 public class SuperBit implements Serializable {
     
-    private ArrayRealVector[] hyperplanes;
+    private double[][] hyperplanes;
     
     /**
      * Initialize SuperBit algorithm.
@@ -123,12 +125,7 @@ public class SuperBit implements Serializable {
             }
         }
         
-        hyperplanes = new ArrayRealVector[w.length];
-        for (int i = 0; i < w.length; i++) {
-            this.hyperplanes[i] = new ArrayRealVector(w[i]);
-        }
-        
-        // this.hyperplanes = w;
+        this.hyperplanes = w;
     }
     
     /**
@@ -152,7 +149,7 @@ public class SuperBit implements Serializable {
      * @return 
      */
     
-    public boolean[] signature(RealVector vector) {
+    public boolean[] signature(SparseIntegerVector vector) {
         boolean[] sig = new boolean[this.hyperplanes.length];
         for (int i = 0; i < this.hyperplanes.length; i++) {
             sig[i] = (vector.dotProduct(this.hyperplanes[i]) >= 0);
@@ -166,7 +163,11 @@ public class SuperBit implements Serializable {
      * @return 
      */
     public boolean[] signature(double[] vector) {
-        return signature(new ArrayRealVector(vector));
+        boolean[] sig = new boolean[this.hyperplanes.length];
+        for (int i = 0; i < this.hyperplanes.length; i++) {
+            sig[i] = (dotProduct(this.hyperplanes[i], vector) >= 0);
+        }
+        return sig;
     }
     
     /**
@@ -189,7 +190,7 @@ public class SuperBit implements Serializable {
         return Math.cos((1 - E) * Math.PI);
     }
     
-    public ArrayRealVector[] getHyperplanes() {
+    public double[][] getHyperplanes() {
         return this.hyperplanes;
     }
     
