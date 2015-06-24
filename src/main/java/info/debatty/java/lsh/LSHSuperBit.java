@@ -24,6 +24,7 @@
 
 package info.debatty.java.lsh;
 
+import info.debatty.java.utils.SparseDoubleVector;
 import info.debatty.java.utils.SparseIntegerVector;
 import java.io.Serializable;
 
@@ -50,7 +51,7 @@ public class LSHSuperBit extends LSH implements Serializable {
      * @param b buckets (per stage)
      * @param n dimensionality
      */
-    public LSHSuperBit(int s, int b, int n) {
+    public LSHSuperBit(int s, int b, int n) throws Exception {
         super(s, b, n);
         
         // SuberBit code length
@@ -60,6 +61,10 @@ public class LSHSuperBit extends LSH implements Serializable {
             if (K % superbit == 0) {
                 break;
             }
+        }
+        
+        if (superbit == 0) {
+            throw new Exception("Superbit is 0 with parameters: s=" + s + " b=" + b + " n=" + n);
         }
         
         this.sb = new SuperBit(n, superbit, K/superbit);
@@ -79,6 +84,10 @@ public class LSHSuperBit extends LSH implements Serializable {
     }
     
     public int[] hash(SparseIntegerVector vector){
+        return hashSignature(sb.signature(vector));
+    }
+    
+    public int[] hash(SparseDoubleVector vector) {
         return hashSignature(sb.signature(vector));
     }
     

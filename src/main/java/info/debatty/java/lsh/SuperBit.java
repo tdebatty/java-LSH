@@ -24,6 +24,7 @@
 
 package info.debatty.java.lsh;
 
+import info.debatty.java.utils.SparseDoubleVector;
 import info.debatty.java.utils.SparseIntegerVector;
 import java.io.Serializable;
 import java.util.Random;
@@ -150,6 +151,14 @@ public class SuperBit implements Serializable {
      */
     
     public boolean[] signature(SparseIntegerVector vector) {
+        boolean[] sig = new boolean[this.hyperplanes.length];
+        for (int i = 0; i < this.hyperplanes.length; i++) {
+            sig[i] = (vector.dotProduct(this.hyperplanes[i]) >= 0);
+        }
+        return sig;
+    }
+    
+    public boolean[] signature(SparseDoubleVector vector) {
         boolean[] sig = new boolean[this.hyperplanes.length];
         for (int i = 0; i < this.hyperplanes.length; i++) {
             sig[i] = (vector.dotProduct(this.hyperplanes[i]) >= 0);
