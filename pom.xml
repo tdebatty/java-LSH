@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>info.debatty</groupId>
     <artifactId>java-lsh</artifactId>
-    <version>0.6-SNAPSHOT</version>  
+    <version>0.6</version>  
     <packaging>jar</packaging>
   
     <name>${project.artifactId}</name>
@@ -36,7 +36,7 @@
         <connection>scm:git:git@github.com:tdebatty/java-LSH.git</connection>
         <developerConnection>scm:git:git@github.com:tdebatty/java-LSH.git</developerConnection>
         <url>git@github.com:tdebatty/java-LSH.git</url>
-      <tag>HEAD</tag>
+      <tag>v0.6</tag>
   </scm>
   
     <distributionManagement>
