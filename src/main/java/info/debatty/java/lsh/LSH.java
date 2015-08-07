@@ -76,27 +76,17 @@ public abstract class LSH {
      * @return An vector of s integers (between 0 and b-1)
      */
     public int[] hashSignature(int[] signature) {
-        
+                
         // Create an accumulator for each stage
-        long[] acc = new long[s];
-        for (int i = 0; i < s; i++) {
-            acc[i] = 0;
-        }
+        int[] r = new int[s];
         
         // Number of rows per stage
         int rows = signature.length / s;
         
         for (int i = 0; i < signature.length; i++) {
-            long v = ((long) signature[i] * LARGE_PRIME) % Integer.MAX_VALUE;
+            int stage = Math.min(i / rows, s-1);
+            r[stage] = (int) ((r[stage] + (long) signature[i] * LARGE_PRIME) % b);
             
-            // current stage
-            int j = Math.min(i / rows, s-1);
-            acc[j] = (acc[j] + v) % Integer.MAX_VALUE;
-        }
-        
-        int[] r = new int[s];
-        for (int i = 0; i < s; i++) {
-            r[i] = (int) (acc[i] % b);
         }
         
         return r;

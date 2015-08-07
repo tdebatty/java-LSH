@@ -67,11 +67,14 @@ public class LSHMinHash extends LSH {
         double threshold = 0.5;
         int R = (int) Math.ceil(Math.log(1.0/s) / Math.log(threshold)) + 1;
         int signature_size = R * s;
-        //System.out.println("Signature size: " + signature_size);
         this.mh = new MinHash(signature_size, n);
     }
     
     public int[] hash(boolean[] vector) {
         return hashSignature(this.mh.signature(vector));
+    }
+    
+    public int[][] getCoefficients() {
+        return mh.getCoefficients();
     }
 }

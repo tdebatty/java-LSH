@@ -30,6 +30,89 @@ MinHash is a hashing scheme that tents to produce similar signatures for sets th
 
 The Jaccard similarity between two sets is the relative number of elements these sets have in common: J(A, B) = |A ∩ B| / |A ∪ B| A MinHash signature is a sequence of numbers produced by multiple hash functions hi. It can be shown that the Jaccard similarity between two sets is also the probability that this hash result is the same for the two sets: J(A, B) = Pr[hi(A) = hi(B)]. Therefore, MinHash signatures can be used to estimate Jaccard similarity between two sets. Moreover, it can be shown that the expected estimation error is O(1 / sqrt(n)), where n is the size of the signature (the number of hash functions that are used to produce the signature).
 
+```java
+import info.debatty.java.lsh.LSHMinHash;
+import java.util.Random;
+
+public class SimpleLSHMinHashExample {
+
+    public static void main(String[] args) {
+        // proportion of 0's in the vectors
+        // if the vectors are dense (lots of 1's), the average jaccard similarity
+        // will be very high (especially for large vectors), and LSH
+        // won't be able to distinguish them
+        // as a result, all vectors will be binned in the same bucket...
+        double sparsity = 0.75;
+        
+        // Number of sets
+        int count = 10000;
+        
+        // Size of vectors
+        int n = 100;
+        
+        // LSH parameters
+        // the number of stages is also sometimes called thge number of bands
+        int stages = 2;
+        
+        // Attention: to get relevant results, the number of elements per bucket
+        // should be at least 100
+        int buckets = 10;
+        
+        // Let's generate some random sets
+        boolean[][] vectors = new boolean[count][n];
+        Random rand = new Random();
+        
+        for (int i = 0; i < count; i++) {
+            for (int j = 0; j < n; j++) {
+                vectors[i][j] = rand.nextDouble() > sparsity;
+            }
+        }
+        
+        // Create and configure LSH algorithm
+        LSHMinHash lsh = new LSHMinHash(stages, buckets, n);
+        
+        int[][] counts = new int[stages][buckets];
+        
+        // Perform hashing
+        for (boolean[] vector : vectors) {
+            int[] hash = lsh.hash(vector);
+            
+            for (int i = 0; i < hash.length; i++) {
+                counts[i][hash[i]]++;
+            }
+            
+            print(vector);
+            System.out.print(" : ");
+            print(hash);
+            System.out.print("\n");
+        }
+        
+        System.out.println("Number of elements per bucket at each stage:");
+        for (int i = 0; i < stages; i++) {
+            print(counts[i]);
+            System.out.print("\n");
+        }
+    }
+    
+    static void print(int[] array) {
+        System.out.print("[");
+        for (int v : array) {
+            System.out.print("" + v + " ");
+        }
+        System.out.print("]");
+    }
+    
+    static void print(boolean[] array) {
+        System.out.print("[");
+        for (boolean v : array) {
+            System.out.print(v ? "1" : "0");
+        }
+        System.out.print("]");
+    }
+}
+```
+
+Pay attention, LSH using MinHash is very sensitive to the average Jaccard similarity in your dataset! If most vectors in your dataset have a Jaccard similarity above or below 0.5, they might all fall in the same bucket. This is illustrated by example below:
 
 ```java
 import info.debatty.java.lsh.LSHMinHash;

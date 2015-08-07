@@ -138,13 +138,21 @@ public class MinHash {
             sig[i] = Integer.MAX_VALUE;
         }
         
+        // For each row r:
         for (int r = 0; r < dict_size; r++) {
-            if (set.contains(r)) {
-                for (int i = 0; i < n; i++) {
-                    sig[i] = Math.min(
-                            sig[i],
-                            h(i, r));
-                }
+            
+            // if set has 0 in row r, do nothgin
+            if (!set.contains(r)) {
+                continue;
+            }
+            
+            // However, if c has 1 in row r, then for each i = 1, 2, . . . ,n 
+            // set SIG(i, c) to the smaller of the current value of 
+            // SIG(i, c) and hi(r)
+            for (int i = 0; i < n; i++) {
+                sig[i] = Math.min(
+                        sig[i],
+                        h(i, r));
             }
         }
         
@@ -184,28 +192,31 @@ public class MinHash {
     
     private void init(int size, int dict_size) {
         this.dict_size = dict_size;
-        n = size;
+        this.n = size;
+        
         // h = (a * x) + b
         // a and b should be randomly generated
         Random r = new Random();
         hash_coefs = new int[n][2];
         for (int i = 0; i < n; i++) {
-            hash_coefs[i][0] = r.nextInt(Integer.MAX_VALUE); // a
-            hash_coefs[i][1] = r.nextInt(Integer.MAX_VALUE); // b
+            hash_coefs[i][0] = r.nextInt(dict_size); // a
+            hash_coefs[i][1] = r.nextInt(dict_size); // b
         }
     }
     
     
     /**
      * Computes hi(x) as (a_i * x + b_i) % dict_size.
-     * Computations are executed using long, then returned as an int
      * 
      * @param i
      * @param x
      * @return the hashed value of x, using ith hash function
      */
     private int h(int i, int x) {
-        return (int) ((((long)hash_coefs[i][0]) * x +
-                ((long)hash_coefs[i][1])) % dict_size);
+        return (hash_coefs[i][0] * x + hash_coefs[i][1]) % dict_size;
+    }
+    
+    public int[][] getCoefficients() {
+        return hash_coefs;
     }
 }
