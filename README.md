@@ -1,4 +1,5 @@
 # java-LSH
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/info.debatty/java-lsh/badge.svg)](https://maven-badges.herokuapp.com/maven-central/info.debatty/java-lsh)
 
 A Java implementation of Locality Sensitive Hashing (LSH).
 
