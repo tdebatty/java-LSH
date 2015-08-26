@@ -31,6 +31,8 @@ MinHash is a hashing scheme that tents to produce similar signatures for sets th
 
 The Jaccard similarity between two sets is the relative number of elements these sets have in common: J(A, B) = |A ∩ B| / |A ∪ B| A MinHash signature is a sequence of numbers produced by multiple hash functions hi. It can be shown that the Jaccard similarity between two sets is also the probability that this hash result is the same for the two sets: J(A, B) = Pr[hi(A) = hi(B)]. Therefore, MinHash signatures can be used to estimate Jaccard similarity between two sets. Moreover, it can be shown that the expected estimation error is O(1 / sqrt(n)), where n is the size of the signature (the number of hash functions that are used to produce the signature).
 
+### Binning
+
 ```java
 import info.debatty.java.lsh.LSHMinHash;
 import java.util.Random;
@@ -223,6 +225,17 @@ This example will run LSH binning for different number of stages. At each step, 
 On this figure, the x-axis is the Jaccard similarity between sets, the y-axis is the probability that these pairs fall in the same bucket for at least one stage. The different series represent different values for the number of stages (from 1 to 10).
 
 We can clearly recognize the typical S curve of MinHash, with the threshold (the point where the curve is the steepest) located around x = 0.5.
+
+This curve is very important! It shows that if all your sets are similar (similarity above 0.6), all sets will most probably fall in a single bucket. And all other buckets will thus most probably be empty. This can happen for example if your dataset is skewed and presents some sort of principal direction.
+
+At the opposite, if your sets are all different from each other (similarity below 0.2), the curve is nearly flat. This means that pairs of sets have the same probability of falling in the same bucket, independantly of their similarity. The items are then randomly binned into the buckets. If using B buckets and S stages, computing the probability that two items are binned in the same bucket is similar to the problem of rolling S times a dice with B values. The resuling probability is 1 - [(B-1) / B]^S. The computed probability for 10 buckets is presented in table below, and roughly correspond to the above graph.
+
+
+| Stages | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+|--------|--------|--------|--------|--------|--------|--------|--------|--------|--------|----|
+|    Pr  |    0.1 |   0.19 | 0.27   | 0.34   | 0.41   | 0.47   | 0.52   |  0.57  | 0.61   | 0.65 |
+
+### Signatures
 
 If you simply wish to compute MinHash signatures (witout performing LSH binning), you can directly use the MinHash class:
 
