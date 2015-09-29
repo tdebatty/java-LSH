@@ -1,5 +1,5 @@
 # java-LSH
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/info.debatty/java-lsh/badge.svg)](https://maven-badges.herokuapp.com/maven-central/info.debatty/java-lsh) [![Build Status](https://travis-ci.org/tdebatty/java-LSH.svg?branch=master)](https://travis-ci.org/tdebatty/java-LSH)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/info.debatty/java-lsh/badge.svg)](https://maven-badges.herokuapp.com/maven-central/info.debatty/java-lsh) [![Build Status](https://travis-ci.org/tdebatty/java-LSH.svg?branch=master)](https://travis-ci.org/tdebatty/java-LSH) [![API](http://api123.web-d.be/api123-head.svg)](http://api123.web-d.be/api/java-LSH/head/index.html)
 
 A Java implementation of Locality Sensitive Hashing (LSH).
 
@@ -277,6 +277,8 @@ Signature similarity: 0.6767676767676768
 Real similarity (Jaccard index)0.6666666666666666
 ```
 
+[Read Javadoc...](http://api123.web-d.be/api/java-LSH/head/index.html)
+
 ##Super-Bit
 
 Super-Bit is an improvement of Random Projection LSH. It computes an estimation of cosine similarity. In Super-Bit, the K random vectors are orthogonalized in L batches of N vectors, where
@@ -381,3 +383,5 @@ public class MyApp {
         System.out.println("Real (cosine) similarity: " + cosineSimilarity(v1, v2));
     }
 ```
+
+[Read Javadoc...](http://api123.web-d.be/api/java-LSH/head/index.html)
