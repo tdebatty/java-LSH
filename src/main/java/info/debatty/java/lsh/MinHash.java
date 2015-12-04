@@ -1,5 +1,6 @@
 package info.debatty.java.lsh;
 
+import java.io.Serializable;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,7 +26,7 @@ import java.util.TreeSet;
  *
  * @author Thibault Debatty http://www.debatty.info
  */
-public class MinHash {
+public class MinHash implements Serializable {
 
     public static double JaccardIndex(Set<Integer> s1, Set<Integer> s2) {
         Set<Integer> intersection = new HashSet<Integer>(s1);

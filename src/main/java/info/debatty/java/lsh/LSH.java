@@ -1,5 +1,7 @@
 package info.debatty.java.lsh;
 
+import java.io.Serializable;
+
 /**
  * Implementation of Locality Sensitive Hashing (LSH) principle, as described in
  * Leskovec, Rajaraman & Ullman (2014), "Mining of Massive Datasets", 
@@ -7,7 +9,7 @@ package info.debatty.java.lsh;
  * 
  * @author Thibault Debatty http://www.debatty.info
  */
-public abstract class LSH {
+public abstract class LSH implements Serializable {
     
     protected static final long LARGE_PRIME =  433494437;
     

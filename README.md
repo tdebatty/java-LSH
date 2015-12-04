@@ -5,6 +5,10 @@ A Java implementation of Locality Sensitive Hashing (LSH).
 
 Locality Sensitive Hashing (LSH) is a family of hashing methods that tent to produce the same hash (or signature) for similar items. There exist different LSH functions, that each correspond to a similarity metric. For example, the MinHash algorithm is designed for Jaccard similarity (the relative number of elements that two sets have in common). For cosine similarity, the traditional LSH algorithm used is Random Projection, but others exist, like Super-Bit, that deliver better resutls.
 
+LSH functions have two main use cases:
+* Compute the signature of large input vectors. These signatures can be used to quickly estimate the similarity between vectors.
+* With a given number of buekcts, bin similar vectors together.
+
 This library implements Locality Sensitive Hashing (LSH), as described in Leskovec, Rajaraman & Ullman (2014), "Mining of Massive Datasets", Cambridge University Press.
 
 Are currently implemented:
@@ -23,7 +27,6 @@ Using maven:
 ```
 
 Or see the [releases](https://github.com/tdebatty/java-LSH/releases) page.
-
 
 ##MinHash
 
@@ -385,3 +388,87 @@ public class MyApp {
 ```
 
 [Read Javadoc...](http://api123.web-d.be/api/java-LSH/head/index.html)
+
+## Serialization
+
+As the parameters of the hashing function are randomly initialized when the LSH object is instantiated:
+* two LSH objects will produce different hashes and signatures for the same input vector;
+* two executions of your program will produce different hashes and signatures for the same input vector;
+* the signatures produced by two different LSH objects can not be used to estimate the similarity between vectors.
+
+The solution is to serialize you LSH object so you an reuse it:
+
+```java
+import info.debatty.java.lsh.LSHMinHash;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.Random;
+
+public class SerializeExample {
+
+    public static void main(String[] args)
+            throws IOException, ClassNotFoundException {
+
+        // Create a single random boolean vector
+        int n = 100;
+        double sparsity = 0.75;
+        boolean[] vector = new boolean[n];
+        Random rand = new Random();
+        for (int j = 0; j < n; j++) {
+            vector[j] = rand.nextDouble() > sparsity;
+        }
+
+        // Create and configure LSH
+        int stages = 2;
+        int buckets = 10;
+        LSHMinHash lsh = new LSHMinHash(stages, buckets, n);
+        println(lsh.hash(vector));
+
+        // Create another LSH object
+        // as the parameters of the hashing function are randomly initialized
+        // these two LSH objects will produce different hashes for the same
+        // input vector!
+        LSHMinHash other_lsh = new LSHMinHash(stages, buckets, n);
+        println(other_lsh.hash(vector));
+
+        // Moreover, signatures produced by different LSH objects cannot
+        // be used to compute estimated similarity!
+        // The solution is to serialize and save the object, so it can be
+        // reused later...
+        File tempfile = File.createTempFile("lshobject", ".ser");
+        FileOutputStream fout = new FileOutputStream(tempfile);
+        ObjectOutputStream oos = new ObjectOutputStream(fout);
+        oos.writeObject(lsh);
+        oos.close();
+        System.out.println(
+                "LSH object serialized to " + tempfile.getAbsolutePath());
+
+        FileInputStream fin = new FileInputStream(tempfile);
+        ObjectInputStream ois = new ObjectInputStream(fin);
+        LSHMinHash saved_lsh = (LSHMinHash) ois.readObject();
+        println(saved_lsh.hash(vector));
+    }
+
+    static void println(int[] array) {
+        System.out.print("[");
+        for (int v : array) {
+            System.out.print("" + v + " ");
+        }
+        System.out.println("]");
+    }
+}
+```
+
+Will produce something like:
+```
+[5 5 ]
+[3 1 ]
+LSH object serialized to /tmp/lshobject5903174677942358274.ser
+[5 5 ]
+```
+
+[Check the examples](https://github.com/tdebatty/java-LSH/tree/master/src/main/java/info/debatty/java/lsh/examples) or [read Javadoc](http://api123.io/api/java-LSH/head/index.html)
