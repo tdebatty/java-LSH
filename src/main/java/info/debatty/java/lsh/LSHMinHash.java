@@ -24,6 +24,8 @@
 
 package info.debatty.java.lsh;
 
+import java.util.Set;
+
 /**
  *
  * @author Thibault Debatty
@@ -72,6 +74,10 @@ public class LSHMinHash extends LSH {
     
     public int[] hash(boolean[] vector) {
         return hashSignature(this.mh.signature(vector));
+    }
+
+    public int[] hash(Set<Integer> set) {
+        return hashSignature(this.mh.signature(set));
     }
     
     public int[][] getCoefficients() {
