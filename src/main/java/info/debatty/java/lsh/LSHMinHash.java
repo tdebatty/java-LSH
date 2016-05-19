@@ -24,6 +24,8 @@
 
 package info.debatty.java.lsh;
 
+import java.util.Set;
+
 /**
  *
  * @author Thibault Debatty
