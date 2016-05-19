@@ -81,7 +81,7 @@ public class MinHash implements Serializable {
     /**
      * Random a and b coefficients for the random hash functions
      */
-    private int[][] hash_coefs;
+    private long[][] hash_coefs;
 
     /**
      * Dictionary size
@@ -154,8 +154,8 @@ public class MinHash implements Serializable {
 
         for (final int r : list) {
 
-            // However, if c has 1 in row r, then for each i = 1, 2, . . . ,n 
-            // set SIG(i, c) to the smaller of the current value of 
+            // However, if c has 1 in row r, then for each i = 1, 2, . . . ,n
+            // set SIG(i, c) to the smaller of the current value of
             // SIG(i, c) and hi(r)
             for (int i = 0; i < n; i++) {
                 sig[i] = Math.min(
@@ -207,7 +207,7 @@ public class MinHash implements Serializable {
         // h = (a * x) + b
         // a and b should be randomly generated
         Random r = new Random();
-        hash_coefs = new int[n][2];
+        hash_coefs = new long[n][2];
         for (int i = 0; i < n; i++) {
             hash_coefs[i][0] = r.nextInt(dict_size); // a
             hash_coefs[i][1] = r.nextInt(dict_size); // b
@@ -222,10 +222,11 @@ public class MinHash implements Serializable {
      * @return the hashed value of x, using ith hash function
      */
     private int h(int i, int x) {
-        return (hash_coefs[i][0] * x + hash_coefs[i][1]) % dict_size;
+        return (int)
+                ((hash_coefs[i][0] * (long) x + hash_coefs[i][1]) % dict_size);
     }
 
-    public int[][] getCoefficients() {
+    public long[][] getCoefficients() {
         return hash_coefs;
     }
 }
