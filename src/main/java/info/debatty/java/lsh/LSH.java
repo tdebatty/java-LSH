@@ -71,11 +71,6 @@ public abstract class LSH implements Serializable {
      * @return An vector of s integers (between 0 and b-1)
      */
     public final int[] hashSignature(final boolean[] signature) {
-        /*int hashCode = Arrays.hashCode(signature);
-        if (hashCode < 0) {
-            hashCode += Integer.MAX_VALUE;
-        }
-        return new int[] { hashCode % b};*/
 
         // Create an accumulator for each stage
         long[] acc = new long[stages];
