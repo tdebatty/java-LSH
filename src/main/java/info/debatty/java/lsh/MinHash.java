@@ -201,6 +201,25 @@ public class MinHash implements Serializable {
     }
 
     private void init(int size, int dict_size) {
+        if (size <= 0) {
+            throw new InvalidParameterException(
+                    "Signature size should be positive");
+        }
+
+        if (dict_size <= 0) {
+            throw new InvalidParameterException(
+                    "Dictionary size (or vector size) should be positive");
+        }
+
+        // In function h(i, x) the largest value could be
+        // dict_size * dict_size + dict_size
+        // throw an error if dict_size * dict_size + dict_size > Long.MAX_VALUE
+        if (dict_size > (Long.MAX_VALUE - dict_size) / dict_size) {
+            throw new InvalidParameterException(
+                    "Dictionary size (or vector size) is too big and will "
+                            + "cause a multiplication overflow");
+        }
+
         this.dict_size = dict_size;
         this.n = size;
 
