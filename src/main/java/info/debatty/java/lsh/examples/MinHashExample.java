@@ -53,6 +53,6 @@ public class MinHashExample {
         
         System.out.println("Signature similarity: " + minhash.similarity(sig1, sig2));
         System.out.println("Real similarity (Jaccard index)" +
-            MinHash.JaccardIndex(MinHash.Convert2Set(vector1), set2));
+            MinHash.jaccardIndex(MinHash.convert2Set(vector1), set2));
     }
 }

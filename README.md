@@ -187,7 +187,7 @@ public class LSHMinHashExample {
                     int[] hash2 = hashes[j];
                     
                     // We compute the similarity between each pair of sets
-                    double similarity = MinHash.JaccardIndex(vector1, vector2);
+                    double similarity = MinHash.jaccardIndex(vector1, vector2);
 
                     // We count the number of pairs with similarity 0.1, 0.2, 
                     // 0.3, etc.

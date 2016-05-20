@@ -28,7 +28,15 @@ import java.util.TreeSet;
  */
 public class MinHash implements Serializable {
 
-    public static double JaccardIndex(Set<Integer> s1, Set<Integer> s2) {
+    /**
+     * Compute the jaccard index between two sets.
+     * @param s1
+     * @param s2
+     * @return
+     */
+    public static double jaccardIndex(
+            final Set<Integer> s1, final Set<Integer> s2) {
+
         Set<Integer> intersection = new HashSet<Integer>(s1);
         intersection.retainAll(s2);
 
@@ -42,14 +50,27 @@ public class MinHash implements Serializable {
         return (double) intersection.size() / union.size();
     }
 
-    public static double JaccardIndex(boolean[] s1, boolean[] s2) {
+    /**
+     * Compute the exact jaccard index between two sets, represented as
+     * arrays of booleans.
+     * @param s1
+     * @param s2
+     * @return
+     */
+    public static double jaccardIndex(final boolean[] s1, final boolean[] s2) {
         if (s1.length != s2.length) {
             throw new InvalidParameterException("sets must be same size!");
         }
-        return JaccardIndex(Convert2Set(s1), Convert2Set(s2));
+        return jaccardIndex(convert2Set(s1), convert2Set(s2));
     }
 
-    public static Set<Integer> Convert2Set(boolean[] array) {
+    /**
+     * Convert a set represented as an array of booleans to a set of integer.
+     *
+     * @param array
+     * @return
+     */
+    public static Set<Integer> convert2Set(final boolean[] array) {
         Set<Integer> set = new TreeSet<Integer>();
         for (int i = 0; i < array.length; i++) {
             if (array[i]) {
@@ -61,12 +82,12 @@ public class MinHash implements Serializable {
 
     /**
      * Computes the size of the signature required to achieve a given error in
-     * similarity estimation (1 / error^2)
+     * similarity estimation. (1 / error^2)
      *
      * @param error
      * @return size of the signature
      */
-    public static int size(double error) {
+    public static int size(final double error) {
         if (error < 0 && error > 1) {
             throw new IllegalArgumentException("error should be in [0 .. 1]");
         }
@@ -74,58 +95,61 @@ public class MinHash implements Serializable {
     }
 
     /**
-     * Signature size
+     * Signature size.
      */
     private int n;
 
     /**
-     * Random a and b coefficients for the random hash functions
+     * Random a and b coefficients for the random hash functions.
      */
     private long[][] hash_coefs;
 
     /**
-     * Dictionary size
+     * Dictionary size (is also the size of vectors if the sets are provided
+     * as vectors).
      */
     private int dict_size;
 
     /**
      * Initializes hash functions to compute MinHash signatures for sets built
-     * from a dictionary of dict_size elements
+     * from a dictionary of dict_size elements.
      *
      * @param size the number of hash functions (and the size of resulting
      * signatures)
      * @param dict_size
      */
-    public MinHash(int size, int dict_size) {
+    public MinHash(final int size, final int dict_size) {
         init(size, dict_size);
     }
 
     /**
      * Initializes hash function to compute MinHash signatures for sets built
      * from a dictionary of dict_size elements, with a given similarity
-     * estimation error
+     * estimation error.
      *
      * @param error
      * @param dict_size
      */
-    public MinHash(double error, int dict_size) {
+    public MinHash(final double error, final int dict_size) {
         init(size(error), dict_size);
     }
 
     /**
      * Computes the signature for this set The input set is represented as an
-     * vector of booleans For example the array [true, false, true, true, false]
+     * vector of booleans.
+     * For example the array [true, false, true, true, false]
      * corresponds to the set {0, 2, 3}
      *
      * @param vector
      * @return the signature
      */
-    public int[] signature(boolean[] vector) {
+    public final int[] signature(final boolean[] vector) {
         if (vector.length != dict_size) {
-            throw new IllegalArgumentException("Size of array should be dict_size");
+            throw new IllegalArgumentException(
+                    "Size of array should be dict_size");
         }
 
-        return signature(Convert2Set(vector));
+        return signature(convert2Set(vector));
     }
 
     /**
@@ -134,7 +158,7 @@ public class MinHash implements Serializable {
      * @param set
      * @return the signature
      */
-    public int[] signature(Set<Integer> set) {
+    public final int[] signature(final Set<Integer> set) {
         int[] sig = new int[n];
 
         for (int i = 0; i < n; i++) {
@@ -147,7 +171,7 @@ public class MinHash implements Serializable {
         //    if (!set.contains(r)) {
         //        continue;
         //    }
-        // Loop over 'true' values, instead of loop over all values of dictionary
+        // Loop over true values, instead of loop over all values of dictionary
         // to speedup computation
         final List<Integer> list = new ArrayList<Integer>(set);
         Collections.sort(list);
@@ -169,16 +193,17 @@ public class MinHash implements Serializable {
 
     /**
      * Computes an estimation of Jaccard similarity (the number of elements in
-     * common) between two sets, using the MinHash signatures of these two sets
+     * common) between two sets, using the MinHash signatures of these two sets.
      *
      * @param sig1 MinHash signature of set1
      * @param sig2 MinHash signature of set2 (produced using the same
      * coefficients)
      * @return the estimated similarity
      */
-    public double similarity(int[] sig1, int[] sig2) {
+    public final double similarity(final int[] sig1, final int[] sig2) {
         if (sig1.length != sig2.length) {
-            throw new IllegalArgumentException("Size of signatures should be the same");
+            throw new IllegalArgumentException(
+                    "Size of signatures should be the same");
         }
 
         double sim = 0;
@@ -192,15 +217,20 @@ public class MinHash implements Serializable {
     }
 
     /**
-     * Computes the expected error of similarity computed using signatures
+     * Computes the expected error of similarity computed using signatures.
      *
      * @return the expected error
      */
-    public double error() {
+    public final double error() {
         return 1.0 / Math.sqrt(n);
     }
 
-    private void init(int size, int dict_size) {
+    /**
+     * Compute has function coefficients.
+     * @param size
+     * @param dict_size
+     */
+    private void init(final int size, final int dict_size) {
         if (size <= 0) {
             throw new InvalidParameterException(
                     "Signature size should be positive");
@@ -240,12 +270,16 @@ public class MinHash implements Serializable {
      * @param x
      * @return the hashed value of x, using ith hash function
      */
-    private int h(int i, int x) {
+    private int h(final int i, final int x) {
         return (int)
                 ((hash_coefs[i][0] * (long) x + hash_coefs[i][1]) % dict_size);
     }
 
-    public long[][] getCoefficients() {
+    /**
+     * Get the coefficients used by hash function hi.
+     * @return
+     */
+    public final long[][] getCoefficients() {
         return hash_coefs;
     }
 }
