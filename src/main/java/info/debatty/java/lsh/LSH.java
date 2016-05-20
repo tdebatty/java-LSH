@@ -4,72 +4,39 @@ import java.io.Serializable;
 
 /**
  * Implementation of Locality Sensitive Hashing (LSH) principle, as described in
- * Leskovec, Rajaraman & Ullman (2014), "Mining of Massive Datasets", 
+ * Leskovec, Rajaraman & Ullman (2014), "Mining of Massive Datasets",
  * Cambridge University Press.
- * 
+ *
  * @author Thibault Debatty http://www.debatty.info
  */
 public abstract class LSH implements Serializable {
-    
+
     protected static final long LARGE_PRIME =  433494437;
-    
-    protected int s = 3;
-    protected int b = 10;
-    protected int n;
-    
+    private static final int DEFAULT_STAGES = 3;
+    private static final int DEFAULT_BUCKETS = 10;
+
+    private int stages = DEFAULT_STAGES;
+    private int buckets = DEFAULT_BUCKETS;
+
     /**
-     * Instantiates a LSH instance with s stages (or bands) and b buckets (per 
+     * Instantiates a LSH instance with s stages (or bands) and b buckets (per
      * stage), in a space with n dimensions.
-     * 
-     * @param s stages
-     * @param b buckets (per stage)
-     * @param n dimensionality
+     *
+     * @param stages stages
+     * @param buckets buckets (per stage)
      */
-    public LSH(int s, int b, int n) {
-        this.s = s;
-        this.b = b;
-        this.n = n;
-        
+    public LSH(final int stages, final int buckets) {
+        this.stages = stages;
+        this.buckets = buckets;
     }
-    
+
+    /**
+     * Instantiate an empty LSH instance (useful only for serialization).
+     */
     public LSH() {
-        
-    }
-    
-    /**
-     * 
-     * @return the number of stages (bands)
-     */
-    public int getS() {
-        return s;
+
     }
 
-    /**
-     * Set the number of stages (also sometimes called bands).
-     * Default value is 3
-     * @param s 
-     */
-    public void setS(int s) {
-        this.s = s;
-    }
-
-    /**
-     * 
-     * @return the number of buckets (per stage)
-     */
-    public int getB() {
-        return b;
-    }
-
-    /**
-     * Set the number of buckets per stage.
-     * Default value is 10.
-     * @param b 
-     */
-    public void setB(int b) {
-        this.b = b;
-    }
-    
     /**
      * Hash a signature.
      * The signature is divided in s stages (or bands). Each stage is hashed to
@@ -77,23 +44,25 @@ public abstract class LSH implements Serializable {
      * @param signature
      * @return An vector of s integers (between 0 and b-1)
      */
-    public int[] hashSignature(int[] signature) {
-                
+    public final int[] hashSignature(final int[] signature) {
+
         // Create an accumulator for each stage
-        int[] r = new int[s];
-        
+        int[] hash = new int[stages];
+
         // Number of rows per stage
-        int rows = signature.length / s;
-        
+        int rows = signature.length / stages;
+
         for (int i = 0; i < signature.length; i++) {
-            int stage = Math.min(i / rows, s-1);
-            r[stage] = (int) ((r[stage] + (long) signature[i] * LARGE_PRIME) % b);
-            
+            int stage = Math.min(i / rows, stages - 1);
+            hash[stage] = (int)
+                    ((hash[stage] + (long) signature[i] * LARGE_PRIME)
+                    % buckets);
+
         }
-        
-        return r;
+
+        return hash;
     }
-    
+
     /**
      * Hash a signature.
      * The signature is divided in s stages (or bands). Each stage is hashed to
@@ -101,35 +70,38 @@ public abstract class LSH implements Serializable {
      * @param signature
      * @return An vector of s integers (between 0 and b-1)
      */
-    public int[] hashSignature(boolean[] signature) {
+    public final int[] hashSignature(final boolean[] signature) {
         /*int hashCode = Arrays.hashCode(signature);
         if (hashCode < 0) {
             hashCode += Integer.MAX_VALUE;
         }
         return new int[] { hashCode % b};*/
-        
+
         // Create an accumulator for each stage
-        long[] acc = new long[s];
-        for (int i = 0; i < s; i++) {
+        long[] acc = new long[stages];
+        for (int i = 0; i < stages; i++) {
             acc[i] = 0;
         }
-        
+
         // Number of rows per stage
-        int rows = signature.length / s;
-        
+        int rows = signature.length / stages;
+
         for (int i = 0; i < signature.length; i++) {
-            long v = (signature[i] ? (i+1) * LARGE_PRIME : 0);
-            
+            long v = 0;
+            if (signature[i]) {
+                v = (i + 1) * LARGE_PRIME;
+            }
+
             // current stage
-            int j = Math.min(i / rows, s-1);
+            int j = Math.min(i / rows, stages - 1);
             acc[j] = (acc[j] + v) % Integer.MAX_VALUE;
         }
-        
-        int[] r = new int[s];
-        for (int i = 0; i < s; i++) {
-            r[i] = (int) (acc[i] % b);
+
+        int[] r = new int[stages];
+        for (int i = 0; i < stages; i++) {
+            r[i] = (int) (acc[i] % buckets);
         }
-        
+
         return r;
     }
 }

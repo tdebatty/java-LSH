@@ -40,20 +40,20 @@ public class LSHSuperBit extends LSH implements Serializable {
      * b buckets (per stage), in a space with n dimensions. Input vectors with
      * a high cosine similarity have a high probability of falling in the same
      * bucket...
-     * 
+     *
      * Supported input types:
      * - double[]
      * - sparseIntegerVector
      * - int[]
      * - others to come...
-     * 
+     *
      * @param s stages
      * @param b buckets (per stage)
      * @param n dimensionality
      */
     public LSHSuperBit(int s, int b, int n) throws Exception {
-        super(s, b, n);
-        
+        super(s, b);
+
         // SuberBit code length
         int K = s * b / 2;
         int superbit; // superbit value
@@ -62,42 +62,42 @@ public class LSHSuperBit extends LSH implements Serializable {
                 break;
             }
         }
-        
+
         if (superbit == 0) {
             throw new Exception("Superbit is 0 with parameters: s=" + s + " b=" + b + " n=" + n);
         }
-        
+
         this.sb = new SuperBit(n, superbit, K/superbit);
     }
-    
+
     public LSHSuperBit() {
-        
+
     }
 
     /**
      * Hash (bin) a vector in s stages into b buckets
      * @param vector
-     * @return 
+     * @return
      */
     public int[] hash(double[] vector) {
         return hashSignature(sb.signature(vector));
     }
-    
+
     public int[] hash(SparseIntegerVector vector){
         return hashSignature(sb.signature(vector));
     }
-    
+
     public int[] hash(SparseDoubleVector vector) {
         return hashSignature(sb.signature(vector));
     }
-    
+
     /**
      * Hash (bin) a vector in s stages into b buckets
      * @param vector
-     * @return 
+     * @return
      */
     public int[] hash(int[] vector) {
-        
+
         double[] d = new double[vector.length];
         for (int i = 0; i < vector.length; i++) {
             d[i] = (double) vector[i];

@@ -45,7 +45,7 @@ public class LSHMinHash extends LSH {
      * @param n dictionary size
      */
     public LSHMinHash(final int s, final int b, final int n) {
-        super(s, b, n);
+        super(s, b);
 
         /**
          * "Mining of Massive Datasets", p.88.
