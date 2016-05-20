@@ -207,14 +207,16 @@ public class SuperBit implements Serializable {
      */
     public final double similarity(final boolean[] sig1, final boolean[] sig2) {
 
-        double E = 0;
+        double agg = 0;
         for (int i = 0; i < sig1.length; i++) {
-            E += (sig1[i] == sig2[i] ? 1 : 0);
+            if (sig1[i] == sig2[i]) {
+                agg++;
+            }
         }
 
-        E = E / sig1.length;
+        agg = agg / sig1.length;
 
-        return Math.cos((1 - E) * Math.PI);
+        return Math.cos((1 - agg) * Math.PI);
     }
 
     /**
