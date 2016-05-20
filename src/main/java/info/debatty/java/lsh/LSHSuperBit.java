@@ -36,10 +36,10 @@ public class LSHSuperBit extends LSH implements Serializable {
     private SuperBit sb;
 
     /**
-     * LSH implementation relying on SuperBit, to bin vectors s times (stages) in
-     * b buckets (per stage), in a space with n dimensions. Input vectors with
-     * a high cosine similarity have a high probability of falling in the same
-     * bucket...
+     * LSH implementation relying on SuperBit, to bin vectors s times (stages)
+     * in b buckets (per stage), in a space with n dimensions. Input vectors
+     * with a high cosine similarity have a high probability of falling in the
+     * same bucket...
      *
      * Supported input types:
      * - double[]
@@ -47,56 +47,74 @@ public class LSHSuperBit extends LSH implements Serializable {
      * - int[]
      * - others to come...
      *
-     * @param s stages
-     * @param b buckets (per stage)
-     * @param n dimensionality
+     * @param stages stages
+     * @param buckets buckets (per stage)
+     * @param dimensions dimensionality
+     * @throws java.lang.Exception if parameters produce a superbit value 0
      */
-    public LSHSuperBit(int s, int b, int n) throws Exception {
-        super(s, b);
+    public LSHSuperBit(
+            final int stages, final int buckets, final int dimensions)
+            throws Exception {
+
+        super(stages, buckets);
 
         // SuberBit code length
-        int K = s * b / 2;
+        int code_length = stages * buckets / 2;
         int superbit; // superbit value
-        for (superbit = n; superbit >= 1; superbit--) {
-            if (K % superbit == 0) {
+        for (superbit = dimensions; superbit >= 1; superbit--) {
+            if (code_length % superbit == 0) {
                 break;
             }
         }
 
         if (superbit == 0) {
-            throw new Exception("Superbit is 0 with parameters: s=" + s + " b=" + b + " n=" + n);
+            throw new Exception(
+                    "Superbit is 0 with parameters: s=" + stages
+                            + " b=" + buckets + " n=" + dimensions);
         }
 
-        this.sb = new SuperBit(n, superbit, K/superbit);
+        this.sb = new SuperBit(dimensions, superbit, code_length / superbit);
     }
 
+    /**
+     * Empty constructor, used only for serialization.
+     */
     public LSHSuperBit() {
-
     }
 
     /**
-     * Hash (bin) a vector in s stages into b buckets
+     * Hash (bin) a vector in s stages into b buckets.
      * @param vector
      * @return
      */
-    public int[] hash(double[] vector) {
-        return hashSignature(sb.signature(vector));
-    }
-
-    public int[] hash(SparseIntegerVector vector){
-        return hashSignature(sb.signature(vector));
-    }
-
-    public int[] hash(SparseDoubleVector vector) {
+    public final int[] hash(final double[] vector) {
         return hashSignature(sb.signature(vector));
     }
 
     /**
-     * Hash (bin) a vector in s stages into b buckets
+     * Hash (bin) a vector in s stages into b buckets.
      * @param vector
      * @return
      */
-    public int[] hash(int[] vector) {
+    public final int[] hash(final SparseIntegerVector vector){
+        return hashSignature(sb.signature(vector));
+    }
+
+    /**
+     * Hash (bin) a vector in s stages into b buckets.
+     * @param vector
+     * @return
+     */
+    public final int[] hash(final SparseDoubleVector vector) {
+        return hashSignature(sb.signature(vector));
+    }
+
+    /**
+     * Hash (bin) a vector in s stages into b buckets.
+     * @param vector
+     * @return
+     */
+    public final int[] hash(final int[] vector) {
 
         double[] d = new double[vector.length];
         for (int i = 0; i < vector.length; i++) {
