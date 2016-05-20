@@ -24,14 +24,13 @@
 
 package info.debatty.java.lsh;
 
-import java.util.Set;
-
 /**
  *
  * @author Thibault Debatty
  */
 public class LSHMinHash extends LSH {
     private final MinHash mh;
+    private static final double THRESHOLD = 0.5;
 
     /**
      * Instantiates a LSH instance that internally uses MinHash,
@@ -45,7 +44,7 @@ public class LSHMinHash extends LSH {
      * @param b buckets (per stage)
      * @param n dictionary size
      */
-    public LSHMinHash(int s, int b, int n) {
+    public LSHMinHash(final int s, final int b, final int n) {
         super(s, b, n);
 
         /**
@@ -66,17 +65,25 @@ public class LSHMinHash extends LSH {
          * R = ln(1/s) / ln(threshold)
          * signature_size = R * b
          */
-        double threshold = 0.5;
-        int R = (int) Math.ceil(Math.log(1.0/s) / Math.log(threshold)) + 1;
-        int signature_size = R * s;
+        int r = (int) Math.ceil(Math.log(1.0 / s) / Math.log(THRESHOLD)) + 1;
+        int signature_size = r * s;
         this.mh = new MinHash(signature_size, n);
     }
 
-    public int[] hash(boolean[] vector) {
+    /**
+     * Bin this vector to corresponding buckets.
+     * @param vector
+     * @return
+     */
+    public final int[] hash(final boolean[] vector) {
         return hashSignature(this.mh.signature(vector));
     }
 
-    public long[][] getCoefficients() {
+    /**
+     * Get the coefficients used by internal hashing functions.
+     * @return
+     */
+    public final long[][] getCoefficients() {
         return mh.getCoefficients();
     }
 }
