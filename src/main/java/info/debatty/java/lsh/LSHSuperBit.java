@@ -96,7 +96,7 @@ public class LSHSuperBit extends LSH implements Serializable {
      * @param vector
      * @return
      */
-    public final int[] hash(final SparseIntegerVector vector){
+    public final int[] hash(final SparseIntegerVector vector) {
         return hashSignature(sb.signature(vector));
     }
 
