@@ -46,7 +46,29 @@ public class LSHMinHash extends LSH {
      */
     public LSHMinHash(final int s, final int b, final int n) {
         super(s, b);
-
+        this.mh = buildMinHash(s, n, null);
+    }
+    
+    /**
+     * Instantiates a LSH instance that internally uses MinHash,
+     * with s stages (or bands) and b buckets (per stage), for sets out of a
+     * dictionary of n elements.
+     *
+     * Attention: the number of buckets should be chosen such that we have at
+     * least 100 items per bucket.
+     *
+     * @param s stages
+     * @param b buckets (per stage)
+     * @param n dictionary size
+     * @param seed random number generator seed. using the same value will 
+     * guarantee identical hashes across object instantiations
+     */
+    public LSHMinHash(final int s, final int b, final int n, final long seed) {
+        super(s, b);
+        this.mh = buildMinHash(s, n, seed);
+    }
+    
+    private MinHash buildMinHash(final int s, final int n, Long seed) {
         /**
          * "Mining of Massive Datasets", p.88.
          * It can be shown that, using MinHash, the probability that the
@@ -67,7 +89,7 @@ public class LSHMinHash extends LSH {
          */
         int r = (int) Math.ceil(Math.log(1.0 / s) / Math.log(THRESHOLD)) + 1;
         int signature_size = r * s;
-        this.mh = new MinHash(signature_size, n);
+        return seed != null ? new MinHash(signature_size, n, seed) : new MinHash(signature_size, n);
     }
 
     /**

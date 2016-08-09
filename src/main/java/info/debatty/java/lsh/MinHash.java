@@ -119,7 +119,7 @@ public class MinHash implements Serializable {
      * @param dict_size
      */
     public MinHash(final int size, final int dict_size) {
-        init(size, dict_size);
+        init(size, dict_size, new Random());
     }
 
     /**
@@ -131,7 +131,33 @@ public class MinHash implements Serializable {
      * @param dict_size
      */
     public MinHash(final double error, final int dict_size) {
-        init(size(error), dict_size);
+        init(size(error), dict_size, new Random());
+    }
+    
+    /**
+     * Initializes hash functions to compute MinHash signatures for sets built
+     * from a dictionary of dict_size elements.
+     *
+     * @param size the number of hash functions (and the size of resulting
+     * signatures)
+     * @param dict_size
+     * @param seed random number generator seed. using the same value will 
+     * guarantee identical hashes across object instantiations
+     */
+    public MinHash(final int size, final int dict_size, final long seed) {
+        init(size, dict_size, new Random(seed));
+    }
+    
+    /**
+     * Initializes hash function to compute MinHash signatures for sets built
+     * from a dictionary of dict_size elements, with a given similarity
+     * estimation error.
+     *
+     * @param error
+     * @param dict_size
+     */
+    public MinHash(final double error, final int dict_size, final long seed) {
+        init(size(error), dict_size, new Random(seed));
     }
 
     /**
@@ -230,7 +256,7 @@ public class MinHash implements Serializable {
      * @param size
      * @param dict_size
      */
-    private void init(final int size, final int dict_size) {
+    private void init(final int size, final int dict_size, Random r) {
         if (size <= 0) {
             throw new InvalidParameterException(
                     "Signature size should be positive");
@@ -255,7 +281,6 @@ public class MinHash implements Serializable {
 
         // h = (a * x) + b
         // a and b should be randomly generated
-        Random r = new Random();
         hash_coefs = new long[n][2];
         for (int i = 0; i < n; i++) {
             hash_coefs[i][0] = r.nextInt(dict_size); // a

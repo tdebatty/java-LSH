@@ -62,6 +62,24 @@ public class SuperBit implements Serializable {
      * @param l number of Super-Bit [1 ..
      */
     public SuperBit(final int d, final int n, final int l) {
+        this(d, n, l, new Random());
+    }
+
+    /**
+     * Initialize SuperBit algorithm.
+     * Super-Bit depth n must be [1 .. d] and number of Super-Bit l in [1 ..
+     * The resulting code length k = n * l
+     * The K vectors are orthogonalized in L batches of N vectors
+     *
+     * @param d data space dimension
+     * @param n Super-Bit depth [1 .. d]
+     * @param l number of Super-Bit [1 ..
+     */
+    public SuperBit(final int d, final int n, final int l, long seed) {
+        this(d, n, l, new Random(seed));
+    }
+    
+    private SuperBit(final int d, final int n, final int l, Random rand) {
         if (d <= 0) {
             throw new IllegalArgumentException("Dimension d must be >= 1");
         }
@@ -87,7 +105,6 @@ public class SuperBit implements Serializable {
         int code_length = n * l;
 
         double[][] v = new double[code_length][d];
-        Random rand = new Random();
 
         for (int i = 0; i < code_length; i++) {
             double[] vector = new double[d];
