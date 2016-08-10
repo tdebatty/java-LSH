@@ -3,10 +3,10 @@
 
 A Java implementation of Locality Sensitive Hashing (LSH).
 
-* [Download](#Download)
-* [MinHash](#MinHash)
-* [SuperBit](#SuperBit)
-* [Comparable signatures](#Comparable-signatures)
+* [Download](#download)
+* [MinHash](#minhash)
+* [SuperBit](#superbit)
+* [Comparable signatures](#comparable-signatures)
 
 
 Locality Sensitive Hashing (LSH) is a family of hashing methods that tent to produce the same hash (or signature) for similar items. There exist different LSH functions, that each correspond to a similarity metric. For example, the MinHash algorithm is designed for Jaccard similarity (the relative number of elements that two sets have in common). For cosine similarity, the traditional LSH algorithm used is Random Projection, but others exist, like Super-Bit, that deliver better resutls.
