@@ -5,7 +5,7 @@ A Java implementation of Locality Sensitive Hashing (LSH).
 
 * [Download](#download)
 * [MinHash](#minhash)
-* [SuperBit](#superbit)
+* [Super-Bit](#super-bit)
 * [Comparable signatures](#comparable-signatures)
 
 
