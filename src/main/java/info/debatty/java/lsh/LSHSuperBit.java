@@ -50,16 +50,18 @@ public class LSHSuperBit extends LSH implements Serializable {
      * @param stages stages
      * @param buckets buckets (per stage)
      * @param dimensions dimensionality
-     * @throws java.lang.Exception if parameters produce a superbit value 0
      */
     public LSHSuperBit(
             final int stages, final int buckets, final int dimensions) {
 
         super(stages, buckets);
 
-        this.sb = buildSuperBit(stages, buckets, dimensions, null);
+        int code_length = stages * buckets / 2;
+        int superbit = computeSuperBit(stages, buckets, dimensions);
+
+        this.sb = new SuperBit(dimensions, superbit, code_length / superbit);
     }
-    
+
     /**
      * LSH implementation relying on SuperBit, to bin vectors s times (stages)
      * in b buckets (per stage), in a space with n dimensions. Input vectors
@@ -75,20 +77,35 @@ public class LSHSuperBit extends LSH implements Serializable {
      * @param stages stages
      * @param buckets buckets (per stage)
      * @param dimensions dimensionality
-     * @param seed random number generator seed. using the same value will 
+     * @param seed random number generator seed. using the same value will
      * guarantee identical hashes across object instantiations
-     * 
-     * @throws java.lang.Exception if parameters produce a superbit value 0
+     *
      */
     public LSHSuperBit(
-                       final int stages, final int buckets, final int dimensions, long seed) {
-        
+            final int stages,
+            final int buckets,
+            final int dimensions,
+            final long seed) {
+
         super(stages, buckets);
-        
-        this.sb = buildSuperBit(stages, buckets, dimensions, seed);
+
+        int code_length = stages * buckets / 2;
+        int superbit = computeSuperBit(stages, buckets, dimensions);
+
+        this.sb = new SuperBit(
+                dimensions, superbit, code_length / superbit, seed);
     }
-    
-    private SuperBit buildSuperBit(final int stages, final int buckets, final int dimensions, Long seed) {
+
+    /**
+     * Compute the superbit value.
+     * @param stages
+     * @param buckets
+     * @param dimensions
+     * @return
+     */
+    private int computeSuperBit(
+            final int stages,  final int buckets, final int dimensions) {
+
         // SuperBit code length
         int code_length = stages * buckets / 2;
         int superbit; // superbit value
@@ -104,11 +121,7 @@ public class LSHSuperBit extends LSH implements Serializable {
                             + " b=" + buckets + " n=" + dimensions);
         }
 
-        if(seed != null) {
-            return new SuperBit(dimensions, superbit, code_length / superbit, seed);
-        } else {
-            return new SuperBit(dimensions, superbit, code_length / superbit);
-        }
+        return superbit;
     }
 
     /**

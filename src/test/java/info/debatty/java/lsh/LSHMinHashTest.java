@@ -47,8 +47,8 @@ public class LSHMinHashTest {
     double sparsity = 0.75;
 
     // Number and size of vectors
-    int count = 10000;
-    int n = 100000;
+    int count = 1000;
+    int n = 10000;
 
     int stages = 2;
     int buckets = 10;

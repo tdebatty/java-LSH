@@ -74,12 +74,13 @@ public class SuperBit implements Serializable {
      * @param d data space dimension
      * @param n Super-Bit depth [1 .. d]
      * @param l number of Super-Bit [1 ..
+     * @param seed to use for the random number generator
      */
-    public SuperBit(final int d, final int n, final int l, long seed) {
+    public SuperBit(final int d, final int n, final int l, final long seed) {
         this(d, n, l, new Random(seed));
     }
-    
-    private SuperBit(final int d, final int n, final int l, Random rand) {
+
+    private SuperBit(final int d, final int n, final int l, final Random rand) {
         if (d <= 0) {
             throw new IllegalArgumentException("Dimension d must be >= 1");
         }
