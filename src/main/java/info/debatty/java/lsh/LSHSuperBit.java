@@ -53,12 +53,43 @@ public class LSHSuperBit extends LSH implements Serializable {
      * @throws java.lang.Exception if parameters produce a superbit value 0
      */
     public LSHSuperBit(
-            final int stages, final int buckets, final int dimensions)
-            throws Exception {
+            final int stages, final int buckets, final int dimensions) {
 
         super(stages, buckets);
 
-        // SuberBit code length
+        this.sb = buildSuperBit(stages, buckets, dimensions, null);
+    }
+    
+    /**
+     * LSH implementation relying on SuperBit, to bin vectors s times (stages)
+     * in b buckets (per stage), in a space with n dimensions. Input vectors
+     * with a high cosine similarity have a high probability of falling in the
+     * same bucket...
+     *
+     * Supported input types:
+     * - double[]
+     * - sparseIntegerVector
+     * - int[]
+     * - others to come...
+     *
+     * @param stages stages
+     * @param buckets buckets (per stage)
+     * @param dimensions dimensionality
+     * @param seed random number generator seed. using the same value will 
+     * guarantee identical hashes across object instantiations
+     * 
+     * @throws java.lang.Exception if parameters produce a superbit value 0
+     */
+    public LSHSuperBit(
+                       final int stages, final int buckets, final int dimensions, long seed) {
+        
+        super(stages, buckets);
+        
+        this.sb = buildSuperBit(stages, buckets, dimensions, seed);
+    }
+    
+    private SuperBit buildSuperBit(final int stages, final int buckets, final int dimensions, Long seed) {
+        // SuperBit code length
         int code_length = stages * buckets / 2;
         int superbit; // superbit value
         for (superbit = dimensions; superbit >= 1; superbit--) {
@@ -68,12 +99,16 @@ public class LSHSuperBit extends LSH implements Serializable {
         }
 
         if (superbit == 0) {
-            throw new Exception(
+            throw new IllegalArgumentException(
                     "Superbit is 0 with parameters: s=" + stages
                             + " b=" + buckets + " n=" + dimensions);
         }
 
-        this.sb = new SuperBit(dimensions, superbit, code_length / superbit);
+        if(seed != null) {
+            return new SuperBit(dimensions, superbit, code_length / superbit, seed);
+        } else {
+            return new SuperBit(dimensions, superbit, code_length / superbit);
+        }
     }
 
     /**
