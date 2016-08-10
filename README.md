@@ -3,6 +3,12 @@
 
 A Java implementation of Locality Sensitive Hashing (LSH).
 
+* [Download](#Download)
+* [MinHash](#MinHash)
+* [SuperBit](#SuperBit)
+* [Comparable signatures](#Comparable-signatures)
+
+
 Locality Sensitive Hashing (LSH) is a family of hashing methods that tent to produce the same hash (or signature) for similar items. There exist different LSH functions, that each correspond to a similarity metric. For example, the MinHash algorithm is designed for Jaccard similarity (the relative number of elements that two sets have in common). For cosine similarity, the traditional LSH algorithm used is Random Projection, but others exist, like Super-Bit, that deliver better resutls.
 
 LSH functions have two main use cases:
@@ -391,14 +397,64 @@ public class MyApp {
 
 [Read Javadoc...](http://api123.web-d.be/api/java-LSH/head/index.html)
 
-## Serialization
+## Comparable signatures
+
 
 As the parameters of the hashing function are randomly initialized when the LSH object is instantiated:
 * two LSH objects will produce different hashes and signatures for the same input vector;
 * two executions of your program will produce different hashes and signatures for the same input vector;
 * the signatures produced by two different LSH objects can not be used to estimate the similarity between vectors.
 
-The solution is to serialize you LSH object so you an reuse it:
+There are two possibilities to produce comparable signatures: provide an initial seed or serialize your hash object.
+
+### Initial seed
+
+```java
+import info.debatty.java.lsh.MinHash;
+import java.util.Random;
+
+public class InitialSeed {
+
+    public static void main(String[] args) {
+
+        // Initialize two minhash objects, with the same seed
+        int signature_size = 20;
+        int dictionary_size = 100;
+        long initial_seed = 123456;
+
+        MinHash mh = new MinHash(signature_size, dictionary_size, initial_seed);
+        MinHash mh2 = new MinHash(signature_size, dictionary_size, initial_seed);
+
+        // Create a single vector of size dictionary_size
+        Random r = new Random();
+        boolean[] vector = new boolean[dictionary_size];
+        for (int i = 0; i < dictionary_size; i++) {
+            vector[i] = r.nextBoolean();
+        }
+
+        // The two minhash objects will produce the same signature
+        println(mh.signature(vector));
+        println(mh2.signature(vector));
+    }
+
+    static void println(final int[] array) {
+        System.out.print("[");
+        for (int v : array) {
+            System.out.print("" + v + " ");
+        }
+        System.out.println("]");
+    }
+}
+```
+
+Will output:
+
+```
+[0 0 1 1 3 3 0 1 0 2 0 0 9 1 0 0 0 1 7 0 ]
+[0 0 1 1 3 3 0 1 0 2 0 0 9 1 0 0 0 1 7 0 ]
+```
+
+### Serialization
 
 ```java
 import info.debatty.java.lsh.LSHMinHash;
