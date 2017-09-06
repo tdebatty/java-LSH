@@ -1,5 +1,6 @@
 # java-LSH
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/info.debatty/java-lsh/badge.svg)](https://maven-badges.herokuapp.com/maven-central/info.debatty/java-lsh) [![Build Status](https://travis-ci.org/tdebatty/java-LSH.svg?branch=master)](https://travis-ci.org/tdebatty/java-LSH) [![API](http://api123.web-d.be/api123-head.svg)](http://api123.web-d.be/api/java-LSH/head/index.html)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/info.debatty/java-lsh/badge.svg)](https://maven-badges.herokuapp.com/maven-central/info.debatty/java-lsh) [![Build Status](https://travis-ci.org/tdebatty/java-LSH.svg?branch=master)](https://travis-ci.org/tdebatty/java-LSH) [![Javadocs](http://www.javadoc.io/badge/info.debatty/java-lsh.svg)](http://www.javadoc.io/doc/info.debatty/java-lsh)
+
 
 A Java implementation of Locality Sensitive Hashing (LSH).
 
@@ -7,6 +8,8 @@ A Java implementation of Locality Sensitive Hashing (LSH).
 * [MinHash](#minhash)
 * [Super-Bit](#super-bit)
 * [Comparable signatures](#comparable-signatures)
+* [Initial seed](#initial-seed)
+* [Serialization](#serialization)
 
 
 Locality Sensitive Hashing (LSH) is a family of hashing methods that tent to produce the same hash (or signature) for similar items. There exist different LSH functions, that each correspond to a similarity metric. For example, the MinHash algorithm is designed for Jaccard similarity (the relative number of elements that two sets have in common). For cosine similarity, the traditional LSH algorithm used is Random Projection, but others exist, like Super-Bit, that deliver better resutls.
