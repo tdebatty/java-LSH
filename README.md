@@ -291,9 +291,9 @@ Signature similarity: 0.6767676767676768
 Real similarity (Jaccard index)0.6666666666666666
 ```
 
-[Read Javadoc...](http://api123.web-d.be/api/java-LSH/head/index.html)
+[Read Javadoc...](http://www.javadoc.io/doc/info.debatty/java-lsh)
 
-##Super-Bit
+## Super-Bit
 
 Super-Bit is an improvement of Random Projection LSH. It computes an estimation of cosine similarity. In Super-Bit, the K random vectors are orthogonalized in L batches of N vectors, where
 * N is called the Super-Bit depth
@@ -398,7 +398,7 @@ public class MyApp {
     }
 ```
 
-[Read Javadoc...](http://api123.web-d.be/api/java-LSH/head/index.html)
+[Read Javadoc...](http://www.javadoc.io/doc/info.debatty/java-lsh)
 
 ## Comparable signatures
 
@@ -532,4 +532,4 @@ LSH object serialized to /tmp/lshobject5903174677942358274.ser
 [5 5 ]
 ```
 
-[Check the examples](https://github.com/tdebatty/java-LSH/tree/master/src/main/java/info/debatty/java/lsh/examples) or [read Javadoc](http://api123.io/api/java-LSH/head/index.html)
+[Check the examples](https://github.com/tdebatty/java-LSH/tree/master/src/main/java/info/debatty/java/lsh/examples) or [read Javadoc](http://www.javadoc.io/doc/info.debatty/java-lsh)
