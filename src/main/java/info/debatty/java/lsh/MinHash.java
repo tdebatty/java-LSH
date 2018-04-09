@@ -294,7 +294,7 @@ public class MinHash implements Serializable {
     }
 
     /**
-     * Computes hi(x) as (a_i * x + b_i) % LARGE_PRIME
+     * Computes hi(x) as (a_i * x + b_i) % LARGE_PRIME .
      *
      * @param i
      * @param x
