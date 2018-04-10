@@ -28,6 +28,8 @@ import java.util.TreeSet;
  */
 public class MinHash implements Serializable {
 
+    private static final int LARGE_PRIME = 2147483647; // = 2^31 - 1 !
+
     /**
      * Compute the jaccard index between two sets.
      * @param s1
@@ -283,16 +285,16 @@ public class MinHash implements Serializable {
         this.n = size;
 
         // h = (a * x) + b
-        // a and b should be randomly generated
+        // a and b should be randomly generated in [1,PRIME-1]
         hash_coefs = new long[n][2];
         for (int i = 0; i < n; i++) {
-            hash_coefs[i][0] = r.nextInt(dict_size); // a
-            hash_coefs[i][1] = r.nextInt(dict_size); // b
+            hash_coefs[i][0] = r.nextInt(LARGE_PRIME - 1) + 1; // a
+            hash_coefs[i][1] = r.nextInt(LARGE_PRIME - 1) + 1; // b
         }
     }
 
     /**
-     * Computes hi(x) as (a_i * x + b_i) % dict_size.
+     * Computes hi(x) as (a_i * x + b_i) % LARGE_PRIME .
      *
      * @param i
      * @param x
@@ -300,7 +302,8 @@ public class MinHash implements Serializable {
      */
     private int h(final int i, final int x) {
         return (int)
-                ((hash_coefs[i][0] * (long) x + hash_coefs[i][1]) % dict_size);
+                ((hash_coefs[i][0] * (long) x + hash_coefs[i][1])
+                 % LARGE_PRIME);
     }
 
     /**
