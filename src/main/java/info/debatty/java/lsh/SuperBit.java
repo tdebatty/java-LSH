@@ -24,8 +24,6 @@
 
 package info.debatty.java.lsh;
 
-import info.debatty.java.utils.SparseDoubleVector;
-import info.debatty.java.utils.SparseIntegerVector;
 import java.io.Serializable;
 import java.util.Random;
 
@@ -40,7 +38,6 @@ import java.util.Random;
  * Advances in Neural Information Processing Systems 25, 2012
  *
  * Supported input types:
- * - SparseIntegerVector
  * - double[]
  * - others to come...
  *
@@ -174,32 +171,6 @@ public class SuperBit implements Serializable {
      */
     public SuperBit() {
 
-    }
-
-    /**
-     * Compute the signature of this vector.
-     * @param vector
-     * @return
-     */
-    public final boolean[] signature(final SparseIntegerVector vector) {
-        boolean[] sig = new boolean[this.hyperplanes.length];
-        for (int i = 0; i < this.hyperplanes.length; i++) {
-            sig[i] = (vector.dotProduct(this.hyperplanes[i]) >= 0);
-        }
-        return sig;
-    }
-
-    /**
-     * Compute the signature of this vector.
-     * @param vector
-     * @return
-     */
-    public final boolean[] signature(final SparseDoubleVector vector) {
-        boolean[] sig = new boolean[this.hyperplanes.length];
-        for (int i = 0; i < this.hyperplanes.length; i++) {
-            sig[i] = (vector.dotProduct(this.hyperplanes[i]) >= 0);
-        }
-        return sig;
     }
 
     /**
