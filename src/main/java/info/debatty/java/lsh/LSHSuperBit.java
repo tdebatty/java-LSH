@@ -24,8 +24,6 @@
 
 package info.debatty.java.lsh;
 
-import info.debatty.java.utils.SparseDoubleVector;
-import info.debatty.java.utils.SparseIntegerVector;
 import java.io.Serializable;
 
 /**
@@ -43,7 +41,6 @@ public class LSHSuperBit extends LSH implements Serializable {
      *
      * Supported input types:
      * - double[]
-     * - sparseIntegerVector
      * - int[]
      * - others to come...
      *
@@ -70,7 +67,6 @@ public class LSHSuperBit extends LSH implements Serializable {
      *
      * Supported input types:
      * - double[]
-     * - sparseIntegerVector
      * - int[]
      * - others to come...
      *
@@ -136,24 +132,6 @@ public class LSHSuperBit extends LSH implements Serializable {
      * @return
      */
     public final int[] hash(final double[] vector) {
-        return hashSignature(sb.signature(vector));
-    }
-
-    /**
-     * Hash (bin) a vector in s stages into b buckets.
-     * @param vector
-     * @return
-     */
-    public final int[] hash(final SparseIntegerVector vector) {
-        return hashSignature(sb.signature(vector));
-    }
-
-    /**
-     * Hash (bin) a vector in s stages into b buckets.
-     * @param vector
-     * @return
-     */
-    public final int[] hash(final SparseDoubleVector vector) {
         return hashSignature(sb.signature(vector));
     }
 

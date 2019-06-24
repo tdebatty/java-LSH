@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 /**
  * Implementation of Locality Sensitive Hashing (LSH) principle, as described in
- * Leskovec, Rajaraman & Ullman (2014), "Mining of Massive Datasets",
+ * Leskovec, Rajaraman &amp; Ullman (2014), "Mining of Massive Datasets",
  * Cambridge University Press.
  *
  * @author Thibault Debatty http://www.debatty.info
