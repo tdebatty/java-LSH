@@ -103,6 +103,15 @@ public class LSHMinHash extends LSH {
     public final int[] hash(final boolean[] vector) {
         return hashSignature(this.mh.signature(vector));
     }
+    
+    /**
+     * Bin this set to corresponding buckets.
+     * @param set
+     * @return
+     */
+    public final int[] hash(final Set<Integer> set) {
+        return hashSignature(this.mh.signature(set));
+    }
 
     /**
      * Get the coefficients used by internal hashing functions.
