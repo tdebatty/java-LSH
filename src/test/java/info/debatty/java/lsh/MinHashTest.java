@@ -28,7 +28,6 @@ public class MinHashTest {
         for (int i = 0; i < 50; i++) {
             ints.add(r.nextInt());
         }
-
         assertArrayEquals(mh.signature(ints), mh2.signature(ints));
     }
 }
