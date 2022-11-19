@@ -30,6 +30,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.file.Files;
 import java.util.Random;
 
 /**
@@ -72,7 +73,7 @@ public class SerializeExample {
         // be used to compute estimated similarity!
         // The solution is to serialize and save the object, so it can be
         // reused later...
-        File tempfile = File.createTempFile("lshobject", ".ser");
+        File tempfile = Files.createTempFile("lshobject", ".ser").toFile();
         FileOutputStream fout = new FileOutputStream(tempfile);
         ObjectOutputStream oos = new ObjectOutputStream(fout);
         oos.writeObject(lsh);
